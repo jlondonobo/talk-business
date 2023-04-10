@@ -1,4 +1,5 @@
 --find-links=https://girder.github.io/large_image_wheels GDAL
+-r https://raw.githubusercontent.com/snowflakedb/snowflake-connector-python/v3.0.2/tested_requirements/requirements_310.reqs
 streamlit
 pandas
 shapely
