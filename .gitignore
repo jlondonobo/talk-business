@@ -190,3 +190,6 @@ venv/
 pyvenv.cfg
 .venv
 pip-selfcheck.json
+
+secrets.toml
+.env
