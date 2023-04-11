@@ -192,3 +192,4 @@ pyvenv.cfg
 pip-selfcheck.json
 
 secrets.toml
+.env
