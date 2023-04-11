@@ -46,6 +46,8 @@ def plot_blocks_choropleth(
         mapbox_accesstoken=os.getenv("MAPBOX_TOKEN"),
         margin=dict(l=0, r=0, t=0, b=0),
         showlegend=False,
+        uirevision="Don't change",
         height=700,
     )
+    fig.update_traces(marker_line_width=1, marker_line_color="white")
     return fig

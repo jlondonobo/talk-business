@@ -38,25 +38,37 @@ def encode_list(param_list: list[str]) -> Union[str, tuple[str]]:
         return ""
 
 
+def to_gdf(df: pd.DataFrame) -> gpd.GeoDataFrame:
+    """Convert a pandas dataframe to a geopandas dataframe."""
+    df = df.rename(columns={"GEOMETRY": "geometry"})
+    gdf = gpd.GeoDataFrame(
+        df,
+        geometry=gpd.GeoSeries.from_wkt(df["geometry"]),
+        crs="EPSG:4326",
+    )
+    return gdf
+
+
 def get_total_population(
     county: list[str],
 ) -> gpd.GeoDataFrame:
     """Get a list of counties from the Census API."""
 
     query = """
-    --begin-sql
-    SELECT census_block_group, "B01001e1" as total_population, geometry
-    FROM OPENCENSUSDATA.PUBLIC."2019_CBG_B01"
-    LEFT JOIN OPENCENSUSDATA.PUBLIC."2019_CBG_GEOMETRY_WKT"
-    USING (census_block_group)
+    SELECT 
+        census_block_group,
+        "B01001e1" AS total_population,
+        "B01001e1" / (amount_land * 3.8610215854781257e-7) AS density_pop_sqmile,
+        geometry
+    FROM OPENCENSUSDATA.PUBLIC."2020_CBG_B01"
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" USING (census_block_group)
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_METADATA_CBG_GEOGRAPHIC_DATA" USING (census_block_group)
     WHERE census_block_group IN (
         SELECT census_block_group
-        FROM OPENCENSUSDATA.PUBLIC."2019_CBG_GEOMETRY_WKT"
+        FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
         WHERE state = 'NY' AND county IN (%(county)s)
-    ) AND total_population > 10
+    ) AND total_population > 10;
     """
 
     df = run_query(query, params={"county": encode_list(county)})
-    df = df.rename(columns={"GEOMETRY": "geometry"})
-    gdf = gpd.GeoDataFrame(df, geometry=gpd.GeoSeries.from_wkt(df["geometry"]), crs="EPSG:4326")
-    return gdf
+    return to_gdf(df)
