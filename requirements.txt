@@ -12,3 +12,4 @@ httpx
 geojson
 h3
 jenkspy
+matplotlib
