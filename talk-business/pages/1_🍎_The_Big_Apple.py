@@ -20,7 +20,7 @@ conn = init_connection()
 def run_query(query):
     with conn.cursor() as cur:
         cur.execute(query)
-        return cur.fetchall()
+        return cur.fetch_pandas_all()
 
 
 rows = run_query(
@@ -34,5 +34,4 @@ rows = run_query(
 
 # Print results.
 print("NYC Counties:")
-for row in rows:
-    st.write(row[0])
+st.dataframe(rows)
