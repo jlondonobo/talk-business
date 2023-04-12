@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Literal, Union
 
 import geopandas as gpd
 import pandas as pd
@@ -78,19 +78,26 @@ def get_simple_column(
     county: list[str],
     column: str,
     varname: str = "VALUE",
+    agg_type: Literal["TOTAL", "PERCENTAGE"] = "TOTAL",
 ) -> gpd.GeoDataFrame:
+    TABLE = column[:3]
+    
+    if agg_type == "TOTAL":
+        column_selector = f'"{column}" as {varname}'
+    elif agg_type == "PERCENTAGE":
+        column_selector = f'"{column}" / "{TABLE}001e1" as {varname}'
     query = f"""SELECT
         census_block_group,
-        "{column}" as {varname},
+        {column_selector},
         geometry
-    FROM OPENCENSUSDATA.PUBLIC."2020_CBG_B01"
+    FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{TABLE}"
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" USING (census_block_group)
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_METADATA_CBG_GEOGRAPHIC_DATA" USING (census_block_group)
     WHERE census_block_group IN (
         SELECT census_block_group
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
         WHERE state = 'NY' AND county IN (%(county)s)
-    ) AND "B01001e1" > 10;
+    ) AND "{TABLE}001e1" > 10;
     """
     df = run_query(query, params={"county": encode_list(county)})
     return to_gdf(df)

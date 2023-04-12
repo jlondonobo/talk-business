@@ -3,4 +3,5 @@ METRICS = {
     "TOTAL_POPULATION": "Population",
     "DENSITY_POP_SQMILE": "Density (Population/Square Mile)",
     "MEDIAN_AGE": "Median Age",
+    "RACE": "Race",
 }
