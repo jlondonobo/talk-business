@@ -14,6 +14,8 @@ st.markdown("# Provisional title")
 counties = st.multiselect("Select a county", COUNTIES, COUNTIES[0])
 metric = st.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get)
 
+
+# Get Data
 if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
     data = get_total_population(counties)
     colname = metric
@@ -28,6 +30,19 @@ elif metric in GROUPED_COUNTS:
     agg_type = st.radio("Aggregation", ["TOTAL", "PERCENTAGE"], index=0)
     colname = f"{metric}_{variant}_{agg_type}"    
     data = get_simple_column(counties, GROUPED_COUNTS[metric][variant], colname, agg_type)
+
+
+
+## plot map
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.metric(label="label_placeholder", value=100)
+with col2:
+    st.metric(label="label_placeholder", value=100)
+with col3:
+    st.metric(label="label_placeholder", value=100)
+with col4:
+    st.metric(label="label_placeholder", value=100)
 
 
 map = plot_blocks_choropleth(data, "CENSUS_BLOCK_GROUP", colname.upper())
