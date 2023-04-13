@@ -101,3 +101,31 @@ def get_simple_column(
     """
     df = run_query(query, params={"county": encode_list(county)})
     return to_gdf(df)
+
+
+def get_statistics(county: list[str]) -> pd.DataFrame:
+    """
+    Returns four summary statistics for the selected counties.
+
+    The statistics are:
+    - Total population
+    - Age weighted average
+    - Percentage of female population
+    - Per-capita income weighted average
+    """
+    query = """
+    SELECT 
+        SUM("B01003e1") AS TOTAL_POP,
+        SUM("B01002e1" * "B01003e1") / SUM("B01003e1") AS WEIGHTED_AVG_AGE,
+        SUM("B01001e26") / SUM("B01001e1") AS FEMALE_PERCENT,
+        SUM("B19301e1" * "B01003e1") / SUM("B01003e1") AS WEIGHTED_AVG_PER_CAPITA_INCOME
+    FROM OPENCENSUSDATA.PUBLIC."2020_CBG_B01"
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B19" USING (census_block_group)
+    WHERE census_block_group IN (
+        SELECT census_block_group
+        FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
+        WHERE state = 'NY' AND county IN (%(county)s)
+    );
+    """
+    df = run_query(query, params={"county": encode_list(county)})
+    return df
