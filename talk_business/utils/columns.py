@@ -1,5 +1,7 @@
 STATS = {
-    "TOTAL_POPULATION": "B01003e1"
+    # "TOTAL_POPULATION": "B01003e1",
+    "PER_CAPITA_INCOME": "B19301e1",
+    "HOUSEHOLD_SIZE": "B25010e1",
 }
 
 
@@ -8,7 +10,13 @@ GROUPED_STATS = {
         "TOTAL": "B01002e1",
         "MALE": "B01002e2",
         "FEMALE": "B01002e3",
-    },    
+    },
+    # Unit: housing units
+    "OCCUPANCY_STATUS": {
+        "TOTAL": "B25002e1",
+        "OCCUPIED": "B25002e2",
+        "VACANT": "B25002e3",
+    }
 }
 
 
