@@ -46,8 +46,12 @@ with col4:
 
 # Get Data
 if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
-    data = get_total_population(counties)
     colname = metric
+    data = get_total_population(counties)
+
+elif metric in STATS:
+    colname = metric
+    data = get_simple_column(counties, STATS[metric], colname)
 
 elif metric in GROUPED_STATS:
     variant = st.radio("Select a variant", list(GROUPED_STATS[metric].keys()), index=0)
