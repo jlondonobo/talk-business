@@ -57,6 +57,7 @@ def get_total_population(
     query = """
     SELECT 
         census_block_group,
+        county,
         "B01001e1" AS total_population,
         "B01001e1" / (amount_land * 3.8610215854781257e-7) AS density_pop_sqmile,
         geometry
@@ -88,6 +89,7 @@ def get_simple_column(
         column_selector = f'"{column}" / "{TABLE}001e1" as {varname}'
     query = f"""SELECT
         census_block_group,
+        county,
         {column_selector},
         geometry
     FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{TABLE}"

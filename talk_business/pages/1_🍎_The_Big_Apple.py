@@ -2,11 +2,15 @@ import streamlit as st
 from utils.columns import GROUPED_COUNTS, GROUPED_STATS, STATS
 from utils.options import COUNTIES, METRICS
 from utils.plots.blocks import plot_blocks_choropleth
+from utils.plots.histograms import plot_distribution_by_area
 
 st.set_page_config(
     page_title="The Big Apple",
     layout="wide",
 )
+
+# Need to load this after setting page config
+# else the page will crash due to not being first function ran
 from utils.loaders.census import get_simple_column, get_statistics, get_total_population
 
 st.markdown("# Provisional title")
@@ -61,3 +65,7 @@ elif metric in GROUPED_COUNTS:
 
 map = plot_blocks_choropleth(data, "CENSUS_BLOCK_GROUP", colname.upper())
 st.plotly_chart(map, use_container_width=True)
+
+histogram = plot_distribution_by_area(data, colname.upper())
+st.plotly_chart(histogram, use_container_width=True)
+
