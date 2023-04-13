@@ -14,7 +14,7 @@ NTA_GEOM_URL = "https://s-media.nyc.gov/agencies/dcp/assets/files/zip/data-tools
 
 def load_mapper():
     return (
-        pd.read_excel(MAPPER_URL, usecols=["GEOID", "NTACode", "NTAName", "NTAAbbrev"])
+        pd.read_excel(MAPPER_URL, usecols=["CT2020", "NTACode", "NTAName", "NTAAbbrev"], dtype={"CT2020": str, "NTACode": str})
         .rename(lambda x: x.upper(), axis="columns")
     )
 
@@ -39,7 +39,7 @@ def export_data_to_snowflake(conn, data):
     conn.cursor().execute("CREATE SCHEMA IF NOT EXISTS PUBLIC")
     conn.cursor().execute(
         "CREATE OR REPLACE TABLE "
-        "NTA_MAPPER(GEOID string, NTACODE string, NTANAME string, NTAABBREV string)"
+        "NTA_MAPPER(CT2020 string, NTACODE string, NTANAME string, NTAABBREV string)"
     )
     pandas_tools.write_pandas(
         conn, data, "NTA_MAPPER", database="PERSONAL", schema="PUBLIC"
