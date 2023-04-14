@@ -91,10 +91,11 @@ def get_simple_column(
         census_block_group,
         county,
         {column_selector},
+        ntaname
         geometry
     FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{TABLE}"
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" USING (census_block_group)
-    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_METADATA_CBG_GEOGRAPHIC_DATA" USING (census_block_group)
+    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CT2020=c.tract_code 
     WHERE census_block_group IN (
         SELECT census_block_group
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
@@ -131,3 +132,20 @@ def get_statistics(county: list[str]) -> pd.DataFrame:
     """
     df = run_query(query, params={"county": encode_list(county)})
     return df
+
+
+# Not going to be used yet.
+COUNT_VARIABLES = """
+    SELECT 
+        TRACT_CODE,
+        SUM("B01001e1") as variable,
+        ST_COLLECT(to_geography(geometry))
+    FROM OPENCENSUSDATA.PUBLIC."2020_CBG_B01"
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" USING (census_block_group)
+    WHERE census_block_group IN (
+        SELECT census_block_group
+        FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
+        WHERE state = 'NY' AND county IN ('New York County')
+    ) AND "B01001e1" > 10
+    GROUP BY TRACT_CODE;
+"""
