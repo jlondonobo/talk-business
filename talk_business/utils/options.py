@@ -6,4 +6,5 @@ METRICS = {
     "RACE": "Race",
     "PER_CAPITA_INCOME": "Per capita income",
     "HOUSEHOLD_SIZE": "Household size (avg.)",
+    "MEDIAN_GROSS_RENT": "Median gross rent",
 }
