@@ -12,3 +12,17 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown(
+    """
+    ## About the data
+
+    - NTAs: Neighborhood Tabulation Areas. We collected external data
+    from the NYCs Department of City Planning to aggregate data into easty-to-understand
+    neighborhoods. Neighbourhood statistics and analysis are easier to
+    remeber, and thus more actionable, for geographic areas we are already
+    familiar with. Census blocks and tracts are not well defined in a business context.
+
+    [More info](https://www1.nyc.gov/site/planning/data-maps/open-data/districts-download-metadata.page)
+    """
+)
