@@ -193,3 +193,4 @@ pip-selfcheck.json
 
 secrets.toml
 .env
+.shapes

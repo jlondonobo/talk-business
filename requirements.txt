@@ -13,3 +13,4 @@ geojson
 h3
 jenkspy
 matplotlib
+openpyxl
