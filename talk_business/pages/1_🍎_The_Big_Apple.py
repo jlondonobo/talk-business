@@ -12,6 +12,7 @@ st.set_page_config(
 # Need to load this after setting page config
 # else the page will crash due to not being first function ran
 from utils.sql.us_census_2020 import (
+    get_bounding_box_points,
     get_simple_column,
     get_statistics,
     get_total_population,
@@ -19,7 +20,9 @@ from utils.sql.us_census_2020 import (
 
 st.markdown("# Provisional title")
 
-counties = st.multiselect("Choose the counties you want to explore", COUNTIES, COUNTIES[0])
+counties = st.multiselect(
+    "Choose the counties you want to explore", COUNTIES, COUNTIES[0]
+)
 
 summary_statistics = get_statistics(counties)
 
@@ -58,23 +61,42 @@ elif COLUMNS[metric]["type"] == "METRIC":
     cname = metric
 
 elif COLUMNS[metric]["type"] == "SEGMENTED_STATISTIC":
-    variant = st.radio("Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0)
+    variant = st.radio(
+        "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
+    )
     data = get_simple_column(counties, metric, variant)
     cname = f"{metric}-{variant}"
 
 elif COLUMNS[metric]["type"] == "SEGMENTED_COUNT":
     col1, col2 = st.columns(2)
     with col1:
-        variant = st.selectbox("Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0)
+        variant = st.selectbox(
+            "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
+        )
     with col2:
-        agg_type = st.radio("Aggregation", ["TOTAL", "PERCENTAGE"], index=0, horizontal=True)
+        agg_type = st.radio(
+            "Aggregation", ["TOTAL", "PERCENTAGE"], index=0, horizontal=True
+        )
     data = get_simple_column(counties, metric, variant, agg_type)
     cname = f"{metric}-{variant}"
 
 
-map = plot_blocks_choropleth(data, "CENSUS_BLOCK_GROUP", cname)
+area, centroid = get_bounding_box_points(counties)
+
+zoom = 12
+if area > 260_000_000:
+    zoom = 11
+if area > 1_000_000_000:
+    zoom = 10
+
+map = plot_blocks_choropleth(
+    data,
+    "CENSUS_BLOCK_GROUP",
+    cname,
+    center={"lat": centroid.y, "lon": centroid.x},
+    zoom=zoom,
+)
 st.plotly_chart(map, use_container_width=True)
 
 histogram = plot_distribution_by_area(data, cname)
 st.plotly_chart(histogram, use_container_width=True)
-
