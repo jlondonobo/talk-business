@@ -1,4 +1,4 @@
-from typing import Literal, Union
+from typing import Literal
 
 import geopandas as gpd
 import pandas as pd
@@ -27,29 +27,8 @@ def run_query(query, params=None):
         return cur.fetch_pandas_all()
 
 
-def encode_list(param_list: list[str]) -> Union[str, tuple[str]]:
-    """Sanitize a list of parameters for SQL injection."""
-    num_params = len(param_list)
-    if num_params > 1:
-        return tuple(param_list)
-    elif num_params == 1:
-        return param_list[0]
-    else:
-        return ""
-
-
-def to_gdf(df: pd.DataFrame) -> gpd.GeoDataFrame:
-    """Convert a pandas dataframe to a geopandas dataframe."""
-    df = df.rename(columns={"GEOMETRY": "geometry"})
-    gdf = gpd.GeoDataFrame(
-        df,
-        geometry=gpd.GeoSeries.from_wkt(df["geometry"]),
-        crs="EPSG:4326",
-    )
-    return gdf
-
-
-def get_total_population(
+def get_census_columns(
+    columns: list[str],
     county: list[str],
 ) -> gpd.GeoDataFrame:
     """Get the total population and population density for each county."""
