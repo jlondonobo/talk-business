@@ -42,6 +42,7 @@ def get_total_population(
     SELECT 
         census_block_group,
         county,
+        TRACT_CODE,
         "B01001e1" AS total_population,
         "B01001e1" / (amount_land * 3.8610215854781257e-7) AS density_pop_sqmile,
         geometry
@@ -69,12 +70,26 @@ def get_simple_column(
     table = meta["table"]
 
     if meta["type"] == "METRIC":
-        column_selector = f'"{meta["code"]}" as "{column}"'
+        column_selector = f"""
+        "{meta["code"]}" as "{column}",
+        "{meta["total"]}" as TOTAL
+        """
     else:
         if agg_type == "TOTAL":
-            column_selector = f'"{meta["segments"][variant]}" as "{column}-{variant}"'
+            column_selector = f"""
+            "{meta["segments"][variant]}" as "{column}-{variant}",
+            "{meta["total"]}" as TOTAL
+            """
+
         elif agg_type == "PERCENTAGE":
-            column_selector = f'"{meta["segments"][variant]}" / "{meta["total"]}" as "{column}-{variant}"'
+            column_selector = f"""
+            "{meta["segments"][variant]}" / "{meta["total"]}" as "{column}-{variant}",
+            "{meta["total"]}" as TOTAL
+        """
+
+    add_population = " "
+    if column == "PER_CAPITA_INCOME":
+        add_population = """LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B01" USING (census_block_group)"""
     query = f"""SELECT
         census_block_group,
         TRACT_CODE,
@@ -84,6 +99,7 @@ def get_simple_column(
         geometry
     FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{table}"
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c USING (census_block_group)
+    {add_population}
     LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CT2020=c.tract_code 
     WHERE census_block_group IN (
         SELECT census_block_group

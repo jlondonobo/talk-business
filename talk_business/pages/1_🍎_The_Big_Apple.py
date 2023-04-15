@@ -3,7 +3,7 @@ from utils.columns import COLUMNS
 from utils.options import COUNTIES, METRICS
 from utils.plots.blocks import plot_blocks_choropleth
 from utils.plots.histograms import plot_distribution_by_area
-from utils.transformers.dissolve import dissolve_count
+from utils.transformers.dissolve import dissolve_count, dissolve_weighted_average
 
 st.set_page_config(
     page_title="The Big Apple",
@@ -70,17 +70,26 @@ with col2:
 if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
     data = get_total_population(counties)
     cname = metric
+    if level == "TRACT":
+        id = "TRACT_CODE"
+        data = dissolve_count(data, cname)
 
 elif COLUMNS[metric]["type"] == "METRIC":
     data = get_simple_column(counties, metric)
     cname = metric
+    if level == "TRACT":
+        data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+        id = "TRACT_CODE"
 
-elif COLUMNS[metric]["type"] == "SEGMENTED_STATISTIC":
+elif COLUMNS[metric]["type"] == "SEGMENTED_METRIC":
     variant = st.radio(
         "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
     )
     data = get_simple_column(counties, metric, variant)
     cname = f"{metric}-{variant}"
+    if level == "TRACT":
+        data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+        id = "TRACT_CODE"
 
 elif COLUMNS[metric]["type"] == "SEGMENTED_COUNT":
     col1, col2 = st.columns(2)
@@ -94,9 +103,14 @@ elif COLUMNS[metric]["type"] == "SEGMENTED_COUNT":
         )
     cname = f"{metric}-{variant}"
     data = get_simple_column(counties, metric, variant, agg_type)
-    if agg_type == "TOTAL" and level == "TRACT":
-        data = dissolve_count(data, cname)
-        id = "TRACT_CODE"
+    if level == "TRACT":
+        if agg_type == "TOTAL":
+            id = "TRACT_CODE"
+            data = dissolve_count(data, cname)
+        elif agg_type == "PERCENTAGE":
+            data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+            id = "TRACT_CODE"
+
 
 map = plot_blocks_choropleth(
     data,
