@@ -1,28 +1,44 @@
 COLUMNS = {
-    "METRICS": {
-        "PER_CAPITA_INCOME": {
-            "METRIC": "B19301e1",
-        },
-        "MEDIAN_GROSS_RENT": {
-            "METRIC": "B25064e1",
-        },
-        "HOUSEHOLD_SIZE": {
-            "METRIC": "B25010e1",
-        },
-        "TOTAL_POPULATION": {
-            "METRIC": "B01003e1"
-        },
+    "PER_CAPITA_INCOME": {
+        "type": "METRIC",
+        "label": "Per capita income (12 months)",
+        "table": "B19",
+        "code": "B19301e1",
     },
-    "SEGMENTED_STATISTIC": {
-        "MEDIAN_AGE": {
-            "TOTAL": "B01002e1",
+    "MEDIAN_GROSS_RENT": {
+        "type": "METRIC",
+        "label": "Median gross rent",
+        "table": "B25",
+        "code": "B25064e1",
+    },
+    "HOUSEHOLD_SIZE": {
+        "type": "METRIC",
+        "label": "Household size",
+        "table": "B25",
+        "code": "B25010e1",
+    },
+    "TOTAL_POPULATION": {
+        "type": "METRIC",
+        "label": "Population",
+        "table": "B01",
+        "code": "B01003e1",
+    },
+    "MEDIAN_AGE": {
+        "type": "SEGMENTED_STATISTIC",
+        "label": "Median age",
+        "table": "B01",
+        "total": "B01002e1",
+        "segments": {
             "MALE": "B01002e2",
-            "FEMALE": "B01002e3",
-        },
+            "FEMALE": "B01002e3",    
+        }
     },
-    "SEGMENTED_COUNT": {
-        "RACE": {
-            "TOTAL": "B02001e1",
+    "RACE": {
+        "type": "SEGMENTED_COUNT",
+        "label": "Race",
+        "table": "B02",
+        "total": "B02001e1",
+        "segments": {
             "WHITE": "B02001e2",
             "BLACK_OR_AFRICAN_AMERICAN": "B02001e3",
             "AMERICAN_INDIAN_AND_ALASKA_NATIVE": "B02001e4",
@@ -31,11 +47,35 @@ COLUMNS = {
             "SOME_OTHER_RACE": "B02001e7",
             "TWO_OR_MORE_RACES": "B02001e8",
         },
-        "OCCUPANCY_STATUS": {
-            "TOTAL": "B25002e1",
+    },
+    "OCCUPANCY_STATUS": {
+        "type": "SEGMENTED_COUNT",
+        "label": "Dwelling occupancy status",
+        "table": "B25",
+        "total": "B25002e1",
+        "segments": {
             "OCCUPIED": "B25002e2",
             "VACANT": "B25002e3",
         }
     }
 }
 
+
+def preprocess_column_group(
+    column_groups: dict[str, dict[str, dict[str, str]]]
+) -> list[dict[str, str]]:
+    """Preprocesses a column group for use in a SELECT statement."""
+    columns_sequence = []
+    for group, columns in column_groups.items():
+        for column, variations in columns.items():
+            for variation, code in variations.items():
+                columns_sequence.append(
+                    {"column": code, "alias": f"{column}-{variation}"}
+                )
+
+    return columns_sequence
+
+
+def encode_columns(column_group: dict[str, dict[str, dict[str, str]]]) -> str:
+    preprocessed_columns = preprocess_column_group(column_group)
+    return ", ".join([encode_select(**column) for column in preprocessed_columns])
