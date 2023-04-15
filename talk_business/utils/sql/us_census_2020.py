@@ -77,6 +77,7 @@ def get_simple_column(
             column_selector = f'"{meta["segments"][variant]}" / "{meta["total"]}" as "{column}-{variant}"'
     query = f"""SELECT
         census_block_group,
+        TRACT_CODE,
         county,
         {column_selector},
         ntaname,
