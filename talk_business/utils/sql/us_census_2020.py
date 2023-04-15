@@ -4,6 +4,9 @@ import geopandas as gpd
 import pandas as pd
 import snowflake.connector
 import streamlit as st
+from utils.columns import COLUMNS
+from utils.sql.encoders import encode_list
+from utils.transformers.geo import to_gdf
 
 
 # Initialize connection.
@@ -25,28 +28,6 @@ def run_query(query, params=None):
     with conn.cursor() as cur:
         cur.execute(query, params)
         return cur.fetch_pandas_all()
-
-
-def encode_list(param_list: list[str]) -> Union[str, tuple[str]]:
-    """Sanitize a list of parameters for SQL injection."""
-    num_params = len(param_list)
-    if num_params > 1:
-        return tuple(param_list)
-    elif num_params == 1:
-        return param_list[0]
-    else:
-        return ""
-
-
-def to_gdf(df: pd.DataFrame) -> gpd.GeoDataFrame:
-    """Convert a pandas dataframe to a geopandas dataframe."""
-    df = df.rename(columns={"GEOMETRY": "geometry"})
-    gdf = gpd.GeoDataFrame(
-        df,
-        geometry=gpd.GeoSeries.from_wkt(df["geometry"]),
-        crs="EPSG:4326",
-    )
-    return gdf
 
 
 def get_total_population(
@@ -78,29 +59,33 @@ def get_total_population(
 def get_simple_column(
     county: list[str],
     column: str,
-    varname: str = "VALUE",
+    variant: Union[str, None] = None,
     agg_type: Literal["TOTAL", "PERCENTAGE"] = "TOTAL",
 ) -> gpd.GeoDataFrame:
-    TABLE = column[:3]
-    
-    if agg_type == "TOTAL":
-        column_selector = f'"{column}" as {varname}'
-    elif agg_type == "PERCENTAGE":
-        column_selector = f'"{column}" / "{TABLE}001e1" as {varname}'
+    meta = COLUMNS[column]
+    table = meta["table"]
+
+    if meta["type"] == "METRIC":
+        column_selector = f'"{meta["code"]}" as "{column}"'
+    else:
+        if agg_type == "TOTAL":
+            column_selector = f'"{meta["segments"][variant]}" as "{column}-{variant}"'
+        elif agg_type == "PERCENTAGE":
+            column_selector = f'"{meta["segments"][variant]}" / "{meta["total"]}" as "{column}-{variant}"'
     query = f"""SELECT
         census_block_group,
         county,
         {column_selector},
-        ntaname
+        ntaname,
         geometry
-    FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{TABLE}"
-    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" USING (census_block_group)
+    FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{table}"
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c USING (census_block_group)
     LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CT2020=c.tract_code 
     WHERE census_block_group IN (
         SELECT census_block_group
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
         WHERE state = 'NY' AND county IN (%(county)s)
-    ) AND "{TABLE}001e1" > 10;
+    ) AND "{table}001e1" > 10;
     """
     df = run_query(query, params={"county": encode_list(county)})
     return to_gdf(df)
@@ -139,7 +124,7 @@ COUNT_VARIABLES = """
     SELECT 
         TRACT_CODE,
         SUM("B01001e1") as variable,
-        ST_COLLECT(to_geography(geometry))
+        ST_COLLECT( as GEOMETRY)
     FROM OPENCENSUSDATA.PUBLIC."2020_CBG_B01"
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" USING (census_block_group)
     WHERE census_block_group IN (
