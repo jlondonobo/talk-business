@@ -4,6 +4,9 @@ import geopandas as gpd
 import pandas as pd
 import snowflake.connector
 import streamlit as st
+from pyproj import Geod
+from shapely import Polygon
+from shapely.geometry import box
 from utils.columns import COLUMNS
 from utils.sql.encoders import encode_list
 from utils.transformers.geo import to_gdf
@@ -117,6 +120,31 @@ def get_statistics(county: list[str]) -> pd.DataFrame:
     """
     df = run_query(query, params={"county": encode_list(county)})
     return df
+
+
+def get_bounding_box_points(county: list[str]) -> tuple[float, Polygon]:
+    query = """
+    WITH geoms AS (
+        SELECT st_collect(to_geography(geometry)) as g
+        FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
+        WHERE state = 'NY' AND county IN (%(county)s)
+    )
+
+    SELECT st_xmin(g) as xmin, st_xmax(g) as xmax, st_ymin(g) as ymin, st_ymax(g) as ymax
+    FROM geoms;
+    """
+    
+    df = run_query(query, params={"county": encode_list(county)})
+    xmin = df["XMIN"].values[0]
+    xmax = df["XMAX"].values[0]
+    ymin = df["YMIN"].values[0]
+    ymax = df["YMAX"].values[0]
+    envelope = box(xmin, ymin, xmax, ymax)
+    
+    geod = Geod(ellps="WGS84")
+    area = abs(geod.geometry_area_perimeter(envelope)[0])
+    return area, envelope.centroid
+
 
 
 # Not going to be used yet.
