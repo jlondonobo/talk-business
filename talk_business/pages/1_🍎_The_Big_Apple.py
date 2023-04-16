@@ -3,6 +3,7 @@ from utils.columns import COLUMNS
 from utils.options import COUNTIES, METRICS
 from utils.plots.blocks import plot_blocks_choropleth
 from utils.plots.histograms import plot_distribution_by_area
+from utils.transformers.dissolve import dissolve_count, dissolve_weighted_average
 
 st.set_page_config(
     page_title="The Big Apple",
@@ -21,7 +22,7 @@ from utils.sql.us_census_2020 import (
 st.markdown("# Provisional title")
 
 counties = st.multiselect(
-    "Choose the counties you want to explore", COUNTIES, COUNTIES[0]
+    "Choose the **counties** you want to explore", COUNTIES, COUNTIES[0]
 )
 
 summary_statistics = get_statistics(counties)
@@ -50,22 +51,45 @@ with col4:
     )
 
 
-metric = st.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get)
+area, centroid = get_bounding_box_points(counties)
+
+zoom = 12
+if area > 260_000_000:
+    zoom = 11
+if area > 1_000_000_000:
+    zoom = 10
+
+
+col1, col2 = st.columns(2)
+with col1:
+    metric = st.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get)
+with col2:
+    level = st.radio("Select an aggregation level", ["BLOCK", "TRACT"], horizontal=True)
+    id = "CENSUS_BLOCK_GROUP"
 # Get Data
 if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
     data = get_total_population(counties)
     cname = metric
+    if level == "TRACT":
+        id = "TRACT_CODE"
+        data = dissolve_count(data, cname)
 
 elif COLUMNS[metric]["type"] == "METRIC":
     data = get_simple_column(counties, metric)
     cname = metric
+    if level == "TRACT":
+        data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+        id = "TRACT_CODE"
 
-elif COLUMNS[metric]["type"] == "SEGMENTED_STATISTIC":
+elif COLUMNS[metric]["type"] == "SEGMENTED_METRIC":
     variant = st.radio(
         "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
     )
     data = get_simple_column(counties, metric, variant)
     cname = f"{metric}-{variant}"
+    if level == "TRACT":
+        data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+        id = "TRACT_CODE"
 
 elif COLUMNS[metric]["type"] == "SEGMENTED_COUNT":
     col1, col2 = st.columns(2)
@@ -75,23 +99,22 @@ elif COLUMNS[metric]["type"] == "SEGMENTED_COUNT":
         )
     with col2:
         agg_type = st.radio(
-            "Aggregation", ["TOTAL", "PERCENTAGE"], index=0, horizontal=True
+            "Measurement", ["TOTAL", "PERCENTAGE"], index=0, horizontal=True
         )
-    data = get_simple_column(counties, metric, variant, agg_type)
     cname = f"{metric}-{variant}"
+    data = get_simple_column(counties, metric, variant, agg_type)
+    if level == "TRACT":
+        if agg_type == "TOTAL":
+            id = "TRACT_CODE"
+            data = dissolve_count(data, cname)
+        elif agg_type == "PERCENTAGE":
+            data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+            id = "TRACT_CODE"
 
-
-area, centroid = get_bounding_box_points(counties)
-
-zoom = 12
-if area > 260_000_000:
-    zoom = 11
-if area > 1_000_000_000:
-    zoom = 10
 
 map = plot_blocks_choropleth(
     data,
-    "CENSUS_BLOCK_GROUP",
+    id,
     cname,
     center={"lat": centroid.y, "lon": centroid.x},
     zoom=zoom,

@@ -4,27 +4,30 @@ COLUMNS = {
         "label": "Per capita income (12 months)",
         "table": "B19",
         "code": "B19301e1",
+        "total": "B01003e1", 
     },
     "MEDIAN_GROSS_RENT": {
         "type": "METRIC",
         "label": "Median gross rent",
         "table": "B25",
         "code": "B25064e1",
+        "total": "B25054e1"
     },
     "HOUSEHOLD_SIZE": {
         "type": "METRIC",
         "label": "Household size",
         "table": "B25",
         "code": "B25010e1",
+        "total": "B25003e1",
     },
     "TOTAL_POPULATION": {
-        "type": "METRIC",
+        "type": "COUNT_METRIC",
         "label": "Population",
         "table": "B01",
         "code": "B01003e1",
     },
     "MEDIAN_AGE": {
-        "type": "SEGMENTED_STATISTIC",
+        "type": "SEGMENTED_METRIC",
         "label": "Median age",
         "table": "B01",
         "total": "B01002e1",
