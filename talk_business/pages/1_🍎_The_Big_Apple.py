@@ -62,7 +62,9 @@ if area > 1_000_000_000:
 
 col1, col2 = st.columns(2)
 with col1:
-    metric = st.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get)
+    metric = st.selectbox(
+        "Select a metric", list(METRICS.keys()), format_func=METRICS.get
+    )
 with col2:
     level = st.radio("Select an aggregation level", ["BLOCK", "TRACT"], horizontal=True)
     id = "CENSUS_BLOCK_GROUP"
@@ -73,6 +75,7 @@ if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
     if level == "TRACT":
         id = "TRACT_CODE"
         data = dissolve_count(data, cname)
+        data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
 elif COLUMNS[metric]["type"] == "METRIC":
     data = get_simple_column(counties, metric)
@@ -80,6 +83,7 @@ elif COLUMNS[metric]["type"] == "METRIC":
     if level == "TRACT":
         data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
         id = "TRACT_CODE"
+        data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
 elif COLUMNS[metric]["type"] == "SEGMENTED_METRIC":
     variant = st.radio(
@@ -90,6 +94,8 @@ elif COLUMNS[metric]["type"] == "SEGMENTED_METRIC":
     if level == "TRACT":
         data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
         id = "TRACT_CODE"
+        data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
+
 
 elif COLUMNS[metric]["type"] == "SEGMENTED_COUNT":
     col1, col2 = st.columns(2)
@@ -107,9 +113,11 @@ elif COLUMNS[metric]["type"] == "SEGMENTED_COUNT":
         if agg_type == "TOTAL":
             id = "TRACT_CODE"
             data = dissolve_count(data, cname)
+            data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
         elif agg_type == "PERCENTAGE":
             data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
             id = "TRACT_CODE"
+            data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
 
 map = plot_blocks_choropleth(
