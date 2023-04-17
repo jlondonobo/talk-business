@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from mig_utils.mig_utils import export_data_to_snowflake, init_connection
+from utils.pandas_exporter import export_data_to_snowflake, init_connection
 
 
 def load_mapper():

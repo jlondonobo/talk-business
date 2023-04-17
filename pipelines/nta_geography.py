@@ -5,7 +5,7 @@ from zipfile import ZipFile
 import geopandas as gpd
 import requests
 import streamlit as st
-from mig_utils.mig_utils import export_data_to_snowflake, init_connection
+from utils.pandas_exporter import export_data_to_snowflake, init_connection
 
 
 def load_geoms():
