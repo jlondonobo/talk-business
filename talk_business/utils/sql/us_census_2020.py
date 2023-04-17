@@ -42,6 +42,7 @@ def get_total_population(
     SELECT 
         census_block_group,
         county,
+        COUNTY_FIPS,
         TRACT_CODE,
         "B01001e1" AS total_population,
         "B01001e1" / (amount_land * 3.8610215854781257e-7) AS density_pop_sqmile,
@@ -92,15 +93,16 @@ def get_simple_column(
         add_population = """LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B01" USING (census_block_group)"""
     query = f"""SELECT
         census_block_group,
-        TRACT_CODE,
         county,
+        COUNTY_FIPS,
+        TRACT_CODE,
         {column_selector},
         ntaname,
         geometry
     FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{table}"
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c USING (census_block_group)
     {add_population}
-    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CT2020=c.tract_code 
+    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CT2020=c.tract_code AND nta.COUNTYFIPS=c.COUNTY_FIPS
     WHERE census_block_group IN (
         SELECT census_block_group
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
