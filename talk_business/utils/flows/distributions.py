@@ -37,7 +37,7 @@ def plot_distribution(style: str, neighborhood: str):
         return nplot.distribution(
             income,
             "FAMILY_INCOME_GROUPS",
-            title="Age Distribution",
+            title="Family Income Distribution",
         )
 
     elif style == "OCCUPATION_GROUPS":
