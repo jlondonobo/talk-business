@@ -9,6 +9,7 @@ st.set_page_config(
     layout="wide",
 )
 from utils.flows import distributions
+from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql import neighborhood_explorer as ne
 
 st.markdown("# 🌆 Negihborhood Explorer")
@@ -21,15 +22,31 @@ COUNTIES = {
     "085": "Richmond",
 }
 
-county_select = st.radio(
-    "County", list(COUNTIES.keys()), 0, format_func=COUNTIES.get, horizontal=True
-)
 
-nta_options = ne.get_nta_list(county_select).set_index("NTACODE")["NTANAME"].to_dict()
+col1, col2 = st.columns(2)
 
-nta_select = st.selectbox(
-    "Negihborhood", list(nta_options.keys()), 0, format_func=nta_options.get
-)
+with col1:
+    county_select = st.radio(
+        "County", list(COUNTIES.keys()), 0, format_func=COUNTIES.get, horizontal=True
+    )
+
+    nta_options = (
+        ne.get_nta_list(county_select).set_index("NTACODE")["NTANAME"].to_dict()
+    )
+
+    nta_select = st.selectbox(
+        "Negihborhood", list(nta_options.keys()), 0, format_func=nta_options.get
+    )
+with col2:
+    shapes = ne.get_ntas_by_county(county_select)
+    shape = shapes.query("NTA2020 == @nta_select")
+    centroid = shape["geometry"].values[0].centroid
+    plot = plot_blocks_choropleth(
+        shape, "NTA2020", None, center={"lat": centroid.y, "lon": centroid.x}, uichange=True, zoom=10,
+    )
+    plot.update_traces(marker_opacity=0.5)
+    st.plotly_chart(plot, use_container_width=True)
+
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
     ["Age", "Income", "Rent", "Race", "Occupation", "Enrollment"]
