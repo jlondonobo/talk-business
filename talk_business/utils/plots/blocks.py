@@ -15,6 +15,7 @@ def plot_blocks_choropleth(
     value: str,
     center: dict[str, float] = {"lat": 40.7128, "lon": -74.0060},
     zoom: int = 12,
+    uichange: bool = False,
 ) -> go.Figure:
     """Plot blocks colored by 'value'.
 
@@ -41,13 +42,14 @@ def plot_blocks_choropleth(
         zoom=zoom,
     )
 
+    uirevision = "Don't change" if uichange else None
     fig.update_layout(
         mapbox_style="light",
         mapbox_accesstoken=os.getenv("MAPBOX_TOKEN"),
         margin=dict(l=0, r=0, t=0, b=0),
         showlegend=False,
-        uirevision="Don't change",
-        height=700,
+        uirevision=uirevision,
+        height=200,
     )
     fig.update_traces(marker_line_width=1, marker_line_color="white")
     return fig

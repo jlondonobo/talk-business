@@ -21,7 +21,8 @@ def load_geoms():
 
 def main():
     geoms = load_geoms()
-    geoms = geoms.filter(["NTA2020", "geometry"])
+    geoms = geoms.to_crs("EPSG:4326")
+    geoms = geoms.filter(["CountyFIPS", "NTA2020", "geometry"])
     geoms = geoms.to_wkt().rename(lambda x: x.upper(), axis=1)
 
     conn = init_connection(**st.secrets["snowflake"])

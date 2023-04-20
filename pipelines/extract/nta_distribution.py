@@ -33,7 +33,7 @@ def format_vertical_sum_with_horizontal_sum(
 def format_feature_groups(feature_groups: dict[str, Any]) -> str:
     """Returns a SELECT statement for age groups."""
     select = []
-    for group, data in feature_groups.items():
+    for _group, data in feature_groups.items():
         select.append(
             format_vertical_sum_with_horizontal_sum(data["codes"], data["alias"])
         )
@@ -43,14 +43,14 @@ def format_feature_groups(feature_groups: dict[str, Any]) -> str:
 def query_nta_feature_distribution(feature_groups: dict[str, Any]) -> str:
     return f"""
         SELECT
-        COUNTY,
-        NTANAME,
+            COUNTY,
+            NTACODE,
         {format_feature_groups(feature_groups["columns"])}
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{feature_groups["table"]}"
         LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" as c USING (census_block_group)
         LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CT2020=c.tract_code AND nta.COUNTYFIPS=c.COUNTY_FIPS
         WHERE STATE_FIPS = 36 AND COUNTY IN ('New York County', 'Queens County', 'Kings County', 'Richmond County', 'Bronx County')
-        GROUP BY (COUNTY, NTANAME);
+        GROUP BY (COUNTY, NTACODE);
     """
 
 
