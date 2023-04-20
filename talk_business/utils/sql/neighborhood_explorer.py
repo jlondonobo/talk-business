@@ -6,21 +6,22 @@ def get_distribution(table: str, nta: str) -> pd.DataFrame:
     query = f"""
     SELECT *
     FROM PERSONAL.PUBLIC.{table}
-    WHERE NTANAME = %(nta)s
+    WHERE NTACODE = %(nta)s
     """
     distribution = runner.run_query(query.format(table=table), params={"nta": nta})
     long_distribution = (
         distribution
-        .melt(id_vars=["COUNTY", "NTANAME"], var_name=table, value_name="population")
+        .melt(id_vars=["COUNTY", "NTACODE"], var_name=table, value_name="population")
         .filter([table, "population"])
     )
     return long_distribution
 
 
-def get_nta_list() -> pd.DataFrame:
+def get_nta_list(county: str) -> pd.DataFrame:
     query = """
-    SELECT COUNTYFIPS, NTANAME
+    SELECT NTACODE, NTANAME
     FROM PERSONAL.PUBLIC.NTA_MAPPER
-    GROUP BY (COUNTYFIPS, NTANAME);
+    WHERE COUNTYFIPS = %(county)s
+    GROUP BY (NTACODE, NTANAME);
     """
-    return runner.run_query(query)
+    return runner.run_query(query, params={"county": county})

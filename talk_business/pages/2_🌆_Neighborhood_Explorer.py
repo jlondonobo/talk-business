@@ -13,38 +13,48 @@ from utils.sql import neighborhood_explorer as ne
 
 st.markdown("# 🌆 Negihborhood Explorer")
 
+COUNTIES = {
+    "005": "Bronx",
+    "047": "Kings",
+    "061": "New York",
+    "081": "Queens",
+    "085": "Richmond",
+}
 
-nta_list = ne.get_nta_list()
+county_select = st.radio(
+    "County", list(COUNTIES.keys()), 0, format_func=COUNTIES.get, horizontal=True
+)
 
-county = st.radio("County", nta_list["COUNTYFIPS"].unique(), 0, horizontal=True)
+nta_options = ne.get_nta_list(county_select).set_index("NTACODE")["NTANAME"].to_dict()
 
-ntas = nta_list.query("COUNTYFIPS == @county")["NTANAME"].unique()
-nta = st.selectbox("Negihborhood", ntas, 0)
+nta_select = st.selectbox(
+    "Negihborhood", list(nta_options.keys()), 0, format_func=nta_options.get
+)
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
     ["Age", "Income", "Rent", "Race", "Occupation", "Enrollment"]
 )
 
 with tab1:
-    plot = distributions.plot_distribution("AGE_GROUPS", nta)
+    plot = distributions.plot_distribution("AGE_GROUPS", nta_select)
     st.plotly_chart(plot, use_container_width=True)
 
 with tab2:
-    plot = distributions.plot_distribution("FAMILY_INCOME_GROUPS", nta)
+    plot = distributions.plot_distribution("FAMILY_INCOME_GROUPS", nta_select)
     st.plotly_chart(plot, use_container_width=True)
 
 with tab3:
-    plot = distributions.plot_distribution("RENT_GROUPS", nta)
+    plot = distributions.plot_distribution("RENT_GROUPS", nta_select)
     st.plotly_chart(plot, use_container_width=True)
 
 with tab4:
-    plot = distributions.plot_distribution("RACE_GROUPS", nta)
+    plot = distributions.plot_distribution("RACE_GROUPS", nta_select)
     st.plotly_chart(plot, use_container_width=True)
 
 with tab5:
-    plot = distributions.plot_distribution("OCCUPATION_GROUPS", nta)
+    plot = distributions.plot_distribution("OCCUPATION_GROUPS", nta_select)
     st.plotly_chart(plot, use_container_width=True)
 
 with tab6:
-    plot = distributions.plot_distribution("ENROLLMENT_GROUPS", nta)
+    plot = distributions.plot_distribution("ENROLLMENT_GROUPS", nta_select)
     st.plotly_chart(plot, use_container_width=True)
