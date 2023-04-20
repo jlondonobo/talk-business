@@ -2,35 +2,13 @@ from typing import Literal, Union
 
 import geopandas as gpd
 import pandas as pd
-import snowflake.connector
-import streamlit as st
 from pyproj import Geod
 from shapely import Polygon
 from shapely.geometry import box
 from utils.columns import COLUMNS
 from utils.sql.encoders import encode_list
+from utils.sql.runner import run_query
 from utils.transformers.geo import to_gdf
-
-
-# Initialize connection.
-# Uses st.cache_resource to only run once.
-@st.cache_resource
-def init_connection():
-    return snowflake.connector.connect(
-        **st.secrets["snowflake"], client_session_keep_alive=True
-    )
-
-
-conn = init_connection()
-
-
-# Perform query.
-# Uses st.cache_data to only rerun when the query changes or after 10 min.
-@st.cache_data(ttl=600)
-def run_query(query, params=None):
-    with conn.cursor() as cur:
-        cur.execute(query, params)
-        return cur.fetch_pandas_all()
 
 
 def get_total_population(
@@ -124,7 +102,7 @@ def get_statistics(county: list[str]) -> pd.DataFrame:
     - Per-capita income weighted average
     """
     query = """
-    SELECT 
+    SELECT
         SUM("B01003e1") AS TOTAL_POP,
         SUM("B01002e1" * "B01003e1") / SUM("B01003e1") AS WEIGHTED_AVG_AGE,
         SUM("B01001e26") / SUM("B01001e1") AS FEMALE_PERCENT,
@@ -152,18 +130,17 @@ def get_bounding_box_points(county: list[str]) -> tuple[float, Polygon]:
     SELECT st_xmin(g) as xmin, st_xmax(g) as xmax, st_ymin(g) as ymin, st_ymax(g) as ymax
     FROM geoms;
     """
-    
+
     df = run_query(query, params={"county": encode_list(county)})
     xmin = df["XMIN"].values[0]
     xmax = df["XMAX"].values[0]
     ymin = df["YMIN"].values[0]
     ymax = df["YMAX"].values[0]
     envelope = box(xmin, ymin, xmax, ymax)
-    
+
     geod = Geod(ellps="WGS84")
     area = abs(geod.geometry_area_perimeter(envelope)[0])
     return area, envelope.centroid
-
 
 
 # Not going to be used yet.
