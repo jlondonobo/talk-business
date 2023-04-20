@@ -9,10 +9,16 @@ def init_connection(**kwargs):
     )
 
 
+def run_query(conn, query, params=None):
+    with conn.cursor() as cur:
+        cur.execute(query, params)
+        return cur.fetch_pandas_all()
+
+
 def export_data_to_snowflake(conn, data: pd.DataFrame, table_name: str):
     mapper = {"int64": "numeric", "object": "string", "float64": "numeric"}
     cols = {key: mapper[str(val)] for key, val in data.dtypes.to_dict().items()}
-    parsed_cols = ", ".join([f"{key} {val}" for key, val in cols.items()])
+    parsed_cols = ", ".join([f'"{key}" {val}' for key, val in cols.items()])
 
     conn.cursor().execute("CREATE DATABASE IF NOT EXISTS PERSONAL")
     conn.cursor().execute("USE DATABASE PERSONAL")
