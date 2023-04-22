@@ -6,20 +6,22 @@ import plotly.graph_objects as go
 
 LABELS = {
     "AGE_GROUPS": "Age",
-    "ENROLLMENT_GROUPS": "School Enrollment",
-    "FAMILY_INCOME_GROUPS": "Family Income (Yearly)",
+    "ENROLLMENT_GROUPS": "School enrollment",
+    "FAMILY_INCOME_GROUPS": "Family income (yearly)",
     "OCCUPATION_GROUPS": "Occupation",
     "RACE_GROUPS": "Race",
-    "RENT_GROUPS": "Rent (Monthly)",
+    "RENT_GROUPS": "Rent (monthly)",
     "population": "Population",
-    "age_category": "Age Group",
-    "income_groups": "Family Income",
+    "age_category": "Age group",
+    "income_groups": "Family income",
+    "pop_share": "Share of population",
 }
 
 
 def distribution(
     data: pd.DataFrame,
     labels: str,
+    metric: str,
     title: str,
     color: Union[str, None] = None,
     orient: str = "v",
@@ -27,24 +29,34 @@ def distribution(
     """
     Plots a bar chart of the distribution of the data.
     """
+    
+    tickformat = ",.0%" if metric == "pop_share" else ",.0f"
+    
     if orient == "v":
         x = labels
-        y = "population"
+        y = metric
+
     else:
-        x = "population"
+        x = metric
         y = labels
 
     fig = px.bar(
         data,
         x=x,
         y=y,
-        text_auto=",.0f",
+        text_auto=tickformat,
         color=color,
         labels=LABELS,
         title=title,
         orientation=orient,
     )
-    fig.update_layout(xaxis_type="category")
+
+    if orient == "v":
+        fig.update_layout(xaxis_type="category")
+        fig.update_yaxes(tickformat=tickformat)
+    else:
+        fig.update_layout(yaxis_type="category")
+        fig.update_xaxes(tickformat=tickformat)
     return fig
 
 

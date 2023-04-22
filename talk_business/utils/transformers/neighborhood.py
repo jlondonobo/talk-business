@@ -40,6 +40,11 @@ def aggregate(
     )
 
 
+def compute_share(s: pd.Series) -> pd.Series:
+    """Computes the percentage of the population in each category."""
+    return s / s.sum()
+
+
 def resort_categories(
     data: pd.DataFrame,
     col: str,
