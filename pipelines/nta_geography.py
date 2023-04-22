@@ -23,7 +23,10 @@ def main():
     geoms = load_geoms()
     geoms = geoms.to_crs("EPSG:4326")
     geoms = geoms.filter(["CountyFIPS", "NTA2020", "geometry"])
-    geoms = geoms.to_wkt().rename(lambda x: x.upper(), axis=1)
+    geoms = geoms.to_wkt().rename(
+        {"CountyFIPS": "COUNTY_FIPS", "NTA2020": "NTA_CODE", "geometry": "GEOMETRY"},
+        axis=1,
+    )
 
     conn = init_connection(**st.secrets["snowflake"])
     export_data_to_snowflake(conn, geoms, "NTA_GEOGRAPHY")
