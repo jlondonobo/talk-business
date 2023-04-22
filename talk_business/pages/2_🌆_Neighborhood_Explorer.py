@@ -31,18 +31,18 @@ with col1:
     )
 
     nta_options = (
-        ne.get_nta_list(county_select).set_index("NTACODE")["NTANAME"].to_dict()
+        ne.get_nta_list(county_select).set_index("NTA_CODE")["NTA_NAME"].to_dict()
     )
 
     nta_select = st.selectbox(
         "Negihborhood", list(nta_options.keys()), 0, format_func=nta_options.get
     )
 with col2:
-    shapes = ne.get_ntas_by_county(county_select)
-    shape = shapes.query("NTA2020 == @nta_select")
+    shapes = ne.get_nta_geoms()
+    shape = shapes.query("NTA_CODE == @nta_select")
     centroid = shape["geometry"].values[0].centroid
     plot = plot_blocks_choropleth(
-        shape, "NTA2020", None, center={"lat": centroid.y, "lon": centroid.x}, uichange=True, zoom=10,
+        shape, "NTA_CODE", None, center={"lat": centroid.y, "lon": centroid.x}, uichange=True, zoom=10,
     )
     plot.update_traces(marker_opacity=0.5)
     st.plotly_chart(plot, use_container_width=True)
