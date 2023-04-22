@@ -15,7 +15,15 @@ def load_mapper():
 
 def main():
     mapper = load_mapper()
-    uppercase_mapper = mapper.rename(lambda x: x.upper(), axis="columns")
+    uppercase_mapper = mapper.rename(
+        {
+            "CountyFIPS": "COUNTY_FIPS",
+            "CT2020": "CENSUS_TRACT_2020",
+            "NTACode": "NTA_CODE",
+            "NTAName": "NTA_NAME",
+            "NTAAbbrev": "NTA_ABBREV",
+        }, axis="columns"
+    )
     conn = init_connection(**st.secrets["snowflake"])
     export_data_to_snowflake(conn, uppercase_mapper, "NTA_MAPPER")
 
