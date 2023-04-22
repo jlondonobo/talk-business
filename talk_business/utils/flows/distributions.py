@@ -4,59 +4,80 @@ from utils.transformers import constants as c
 from utils.transformers import neighborhood as ntransform
 
 
-def plot_distribution(style: str, neighborhood: str):
+def plot_distribution(style: str, neighborhood: str, share: bool):
+    if share:
+        metric = "pop_share"
+    else:
+        metric = "population"
+
     if style == "AGE_GROUPS":
-        age = ne.get_distribution("AGE_GROUPS", neighborhood)
+        age = ne.get_distribution(style, neighborhood)
         age = age.assign(
             age_category=lambda df: ntransform.map_to_category(
-                df["AGE_GROUPS"], c.AGE_CATEGORY
-            )
+                df[style], c.AGE_CATEGORY
+            ),
+            pop_share=lambda df: ntransform.compute_share(df["population"]),
         )
         return nplot.distribution(
             age,
-            "AGE_GROUPS",
+            style,
+            metric=metric,
             title="Age Distribution",
             color="age_category",
         )
 
     elif style == "ENROLLMENT_GROUPS":
-        enrollment = ne.get_distribution("ENROLLMENT_GROUPS", neighborhood)
-        enrollment = enrollment.pipe(
-            ntransform.resort_categories, "ENROLLMENT_GROUPS", c.SORTED_ENROLLMENT
+        enrollment = (
+            ne.get_distribution(style, neighborhood)
         )
+        enrollment = enrollment.pipe(
+            ntransform.resort_categories, style, c.SORTED_ENROLLMENT
+        ).assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
         return nplot.distribution(
             enrollment,
-            "ENROLLMENT_GROUPS",
+            style,
+            metric=metric,
             title="Stage of Studies",
         )
     elif style == "FAMILY_INCOME_GROUPS":
-        income = ne.get_distribution("FAMILY_INCOME_GROUPS", neighborhood)
+        income = ne.get_distribution(style, neighborhood)
         income = ntransform.aggregate(
-            income, "FAMILY_INCOME_GROUPS", c.FAMILY_INCOME_GROUPPED
-        )
+            income, style, c.FAMILY_INCOME_GROUPPED
+        ).assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
         return nplot.distribution(
             income,
-            "FAMILY_INCOME_GROUPS",
+            style,
+            metric=metric,
             title="Family Income Distribution",
         )
 
     elif style == "OCCUPATION_GROUPS":
-        occupation = ne.get_distribution("OCCUPATION_GROUPS", neighborhood)
-        occupation = ntransform.parse_occupation(occupation, c.OCCUPATION_MAPPER, 10)
+        occupation = ne.get_distribution(style, neighborhood)
+        occupation = (
+            ntransform.parse_occupation(occupation, c.OCCUPATION_MAPPER, 10)
+            .assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
+        )
         return nplot.distribution(
-            occupation, "OCCUPATION_GROUPS", title="Top 10 Common Jobs", orient="h"
+            occupation, style, metric=metric, title="Top 10 Common Jobs", orient="h"
         )
 
     elif style == "RACE_GROUPS":
-        race = ne.get_distribution("RACE_GROUPS", neighborhood)
-        race = ntransform.aggregate(race, "RACE_GROUPS", c.RACE_GROUPS_MAPPER, False)
-        return nplot.plot_donut(race, "RACE_GROUPS", "Racial Profile")
+        race = ne.get_distribution(style, neighborhood)
+        race = (
+            ntransform.aggregate(race, style, c.RACE_GROUPS_MAPPER, False)
+            .assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
+        )
+        return nplot.plot_donut(race, style, "Racial Profile")
 
     elif style == "RENT_GROUPS":
-        rent = ne.get_distribution("RENT_GROUPS", neighborhood)
-        rent = ntransform.aggregate(rent, "RENT_GROUPS", c.RENT_MAPPER)
+        rent = ne.get_distribution(style, neighborhood)
+        rent = (
+            ntransform.aggregate(rent, style, c.RENT_MAPPER)
+            .assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
+        )
         return nplot.distribution(
             rent,
-            "RENT_GROUPS",
+            style,
+            metric=metric,
             title="Monthly Rent Distribution",
         )
