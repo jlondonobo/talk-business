@@ -24,6 +24,7 @@ COUNTIES = {
 
 with st.sidebar:
     share = st.radio("Distribution display", ["Share", "Total"], horizontal=True) == "Share"
+    compare_with_county = st.checkbox("Compare with county", value=True)
 
 
 col1, col2 = st.columns(2)
