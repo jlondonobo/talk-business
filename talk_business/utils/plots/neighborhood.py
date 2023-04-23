@@ -21,7 +21,7 @@ LABELS = {
 def distribution(
     data: pd.DataFrame,
     labels: str,
-    metric: str,
+    share: bool,
     title: str,
     color: Union[str, None] = None,
     orient: str = "v",
@@ -29,9 +29,13 @@ def distribution(
     """
     Plots a bar chart of the distribution of the data.
     """
-    
+    if share:
+        metric = "pop_share"
+    else:
+        metric = "population"
+
     tickformat = ",.0%" if metric == "pop_share" else ",.0f"
-    
+
     if orient == "v":
         x = labels
         y = metric

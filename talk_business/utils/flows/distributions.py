@@ -1,83 +1,85 @@
+import plotly.graph_objects as go
 from utils.plots import neighborhood as nplot
 from utils.sql import neighborhood_explorer as ne
-from utils.transformers import constants as c
 from utils.transformers import neighborhood as ntransform
 
 
-def plot_distribution(style: str, neighborhood: str, share: bool):
-    if share:
-        metric = "pop_share"
-    else:
-        metric = "population"
-
-    if style == "AGE_GROUPS":
-        age = ne.get_distribution(style, neighborhood)
-        age = age.assign(
-            age_category=lambda df: ntransform.map_to_category(
-                df[style], c.AGE_CATEGORY
-            ),
-            pop_share=lambda df: ntransform.compute_share(df["population"]),
-        )
-        return nplot.distribution(
+def plot_age_dist(neighborhood: str, share: bool) -> go.Figure:
+    """Query and plot age distribution data."""
+    TABLE = "AGE_GROUPS"
+    age = ne.get_distribution(TABLE, neighborhood)
+    age = ntransform.transform_age(age)
+    return nplot.distribution(
             age,
-            style,
-            metric=metric,
+            TABLE,
+            share=share,
             title="Age Distribution",
-            color="age_category",
-        )
+            color="AGE_CATEGORY",
+    )
+    
 
-    elif style == "ENROLLMENT_GROUPS":
-        enrollment = (
-            ne.get_distribution(style, neighborhood)
-        )
-        enrollment = enrollment.pipe(
-            ntransform.resort_categories, style, c.SORTED_ENROLLMENT
-        ).assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
-        return nplot.distribution(
-            enrollment,
-            style,
-            metric=metric,
-            title="Stage of Studies",
-        )
-    elif style == "FAMILY_INCOME_GROUPS":
-        income = ne.get_distribution(style, neighborhood)
-        income = ntransform.aggregate(
-            income, style, c.FAMILY_INCOME_GROUPPED
-        ).assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
-        return nplot.distribution(
-            income,
-            style,
-            metric=metric,
-            title="Family Income Distribution",
-        )
+def plot_enrollment_dist(neighborhood: str, share: bool) -> go.Figure:
+    """Query and plot enrollment distribution data."""
+    TABLE = "ENROLLMENT_GROUPS"
+    enrollment = ne.get_distribution(TABLE, neighborhood)
+    enrollment = ntransform.transform_enrollment(enrollment)
+    return nplot.distribution(
+        enrollment,
+        TABLE,
+        share=share,
+        title="Stage of Studies",
+    )
 
-    elif style == "OCCUPATION_GROUPS":
-        occupation = ne.get_distribution(style, neighborhood)
-        occupation = (
-            ntransform.parse_occupation(occupation, c.OCCUPATION_MAPPER, 10)
-            .assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
-        )
-        return nplot.distribution(
-            occupation, style, metric=metric, title="Top 10 Common Jobs", orient="h"
-        )
 
-    elif style == "RACE_GROUPS":
-        race = ne.get_distribution(style, neighborhood)
-        race = (
-            ntransform.aggregate(race, style, c.RACE_GROUPS_MAPPER, False)
-            .assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
-        )
-        return nplot.plot_donut(race, style, "Racial Profile")
+def plot_family_income_dist(neighborhood: str, share: bool) -> go.Figure:
+    """Query and plot family income distribution data."""
+    TABLE = "FAMILY_INCOME_GROUPS"
+    income = ne.get_distribution(TABLE, neighborhood)
+    income = ntransform.transform_family_income(income)
+    return nplot.distribution(
+        income,
+        TABLE,
+        share=share,
+        title="Family Income Distribution",
+    )
+    
 
-    elif style == "RENT_GROUPS":
-        rent = ne.get_distribution(style, neighborhood)
-        rent = (
-            ntransform.aggregate(rent, style, c.RENT_MAPPER)
-            .assign(pop_share=lambda df: ntransform.compute_share(df["population"]))
-        )
-        return nplot.distribution(
-            rent,
-            style,
-            metric=metric,
-            title="Monthly Rent Distribution",
-        )
+def plot_occupation_dist(neighborhood: str, share: bool) -> go.Figure:
+    """Query and plot occupation distribution data."""
+    TABLE = "OCCUPATION_GROUPS"
+    occupation = ne.get_distribution(TABLE, neighborhood)
+    occupation = ntransform.transform_occupation(occupation)
+    return nplot.distribution(
+        occupation,
+        TABLE,
+        share=share,
+        title="Occupation",
+        orient="h",
+    )
+
+
+def plot_race_dist(neighborhood: str, share: bool) -> go.Figure:
+    """Query and plot race distribution data."""
+    TABLE = "RACE_GROUPS"
+    race = ne.get_distribution(TABLE, neighborhood)
+    race = ntransform.transform_race(race)
+    return nplot.distribution(
+        race,
+        TABLE,
+        share=share,
+        title="Race profile",
+    )
+
+
+def plot_rent_dist(neighborhood: str, share: bool) -> go.Figure:
+    """Query and plot rent distribution data."""
+    TABLE = "RENT_GROUPS"
+    rent = ne.get_distribution(TABLE, neighborhood)
+    rent = ntransform.transform_rent(rent)
+    return nplot.distribution(
+        rent,
+        TABLE,
+        share=share,
+        title="Monthly Rent Distribution",
+    )
+

@@ -57,25 +57,29 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
 )
 
 with tab1:
-    plot = distributions.plot_distribution("AGE_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    if compare_with_county:
+        data = ne.get_county_distribution("AGE_GROUPS", county_select)
+        st.dataframe(data)
+
+    age_plot = distributions.plot_age_dist(nta_select, share)
+    st.plotly_chart(age_plot, use_container_width=True)
 
 with tab2:
-    plot = distributions.plot_distribution("FAMILY_INCOME_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    income_plot = distributions.plot_family_income_dist(nta_select, share)
+    st.plotly_chart(income_plot, use_container_width=True)
 
 with tab3:
-    plot = distributions.plot_distribution("RENT_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    rent_plot = distributions.plot_rent_dist(nta_select, share)
+    st.plotly_chart(rent_plot, use_container_width=True)
 
 with tab4:
-    plot = distributions.plot_distribution("RACE_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    race_plot = distributions.plot_race_dist(nta_select, share)
+    st.plotly_chart(race_plot, use_container_width=True)
 
 with tab5:
-    plot = distributions.plot_distribution("OCCUPATION_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    occupation_plot = distributions.plot_occupation_dist(nta_select, share)
+    st.plotly_chart(occupation_plot, use_container_width=True)
 
 with tab6:
-    plot = distributions.plot_distribution("ENROLLMENT_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    enrollemnt_plot = distributions.plot_enrollment_dist(nta_select, share)
+    st.plotly_chart(enrollemnt_plot, use_container_width=True)
