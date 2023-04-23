@@ -72,15 +72,15 @@ def get_simple_column(
     query = f"""SELECT
         census_block_group,
         county,
-        COUNTY_FIPS,
+        c.COUNTY_FIPS,
         TRACT_CODE,
         {column_selector},
-        ntaname,
+        NTA_NAME,
         geometry
     FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{table}"
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c USING (census_block_group)
     {add_population}
-    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CT2020=c.tract_code AND nta.COUNTYFIPS=c.COUNTY_FIPS
+    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS
     WHERE census_block_group IN (
         SELECT census_block_group
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
