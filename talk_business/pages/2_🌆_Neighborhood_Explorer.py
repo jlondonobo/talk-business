@@ -12,7 +12,7 @@ from utils.flows import distributions
 from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql import neighborhood_explorer as ne
 
-st.markdown("# 🌆 Negihborhood Explorer")
+st.markdown("# 🌆 Neighborhood Explorer")
 
 COUNTIES = {
     "005": "Bronx",
@@ -23,7 +23,10 @@ COUNTIES = {
 }
 
 with st.sidebar:
-    share = st.radio("Distribution display", ["Share", "Total"], horizontal=True) == "Share"
+    share = (
+        st.radio("Distribution display", ["Share", "Total"], horizontal=True) == "Share"
+    )
+    compare_county = st.checkbox("Compare with county", value=False)
 
 
 col1, col2 = st.columns(2)
@@ -38,14 +41,19 @@ with col1:
     )
 
     nta_select = st.selectbox(
-        "Negihborhood", list(nta_options.keys()), 0, format_func=nta_options.get
+        "Neighborhood", list(nta_options.keys()), 0, format_func=nta_options.get
     )
 with col2:
     shapes = ne.get_nta_geoms()
     shape = shapes.query("NTA_CODE == @nta_select")
     centroid = shape["geometry"].values[0].centroid
     plot = plot_blocks_choropleth(
-        shape, "NTA_CODE", None, center={"lat": centroid.y, "lon": centroid.x}, uichange=True, zoom=10,
+        shape,
+        "NTA_CODE",
+        None,
+        center={"lat": centroid.y, "lon": centroid.x},
+        uichange=True,
+        zoom=10,
     )
     plot.update_traces(marker_opacity=0.5)
     st.plotly_chart(plot, use_container_width=True)
@@ -56,25 +64,56 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
 )
 
 with tab1:
-    plot = distributions.plot_distribution("AGE_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    age_plot = distributions.plot_age_dist(
+        county_select,
+        nta_select,
+        share,
+        compare_county,
+    )
+    st.plotly_chart(age_plot, use_container_width=True)
 
 with tab2:
-    plot = distributions.plot_distribution("FAMILY_INCOME_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    income_plot = distributions.plot_family_income_dist(
+        county_select,
+        nta_select,
+        share,
+        compare_county,
+    )
+    income_plot.update_layout(hovermode="x")
+    st.plotly_chart(income_plot, use_container_width=True)
 
 with tab3:
-    plot = distributions.plot_distribution("RENT_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    rent_plot = distributions.plot_rent_dist(
+        county_select,
+        nta_select,
+        share,
+        compare_county,
+    )
+    st.plotly_chart(rent_plot, use_container_width=True)
 
 with tab4:
-    plot = distributions.plot_distribution("RACE_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    race_plot = distributions.plot_race_dist(
+        county_select,
+        nta_select,
+        share,
+        compare_county,
+    )
+    st.plotly_chart(race_plot, use_container_width=True)
 
 with tab5:
-    plot = distributions.plot_distribution("OCCUPATION_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    occupation_plot = distributions.plot_occupation_dist(
+        county_select,
+        nta_select,
+        share,
+        compare_county,
+    )
+    st.plotly_chart(occupation_plot, use_container_width=True)
 
 with tab6:
-    plot = distributions.plot_distribution("ENROLLMENT_GROUPS", nta_select, share)
-    st.plotly_chart(plot, use_container_width=True)
+    enrollemnt_plot = distributions.plot_enrollment_dist(
+        county_select,
+        nta_select,
+        share,
+        compare_county,
+    )
+    st.plotly_chart(enrollemnt_plot, use_container_width=True)

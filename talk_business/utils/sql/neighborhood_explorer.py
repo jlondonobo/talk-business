@@ -19,6 +19,24 @@ def get_distribution(table: str, nta: str) -> pd.DataFrame:
     return long_distribution
 
 
+def get_county_distribution(table: str, county_fips: str) -> pd.DataFrame:
+    """
+    Returns variable distribution for all NTAs in a county.
+    """
+    query = f"""
+    SELECT *
+    FROM PERSONAL.PUBLIC.{table}
+    WHERE COUNTY_FIPS = %(county_fips)s
+    """
+    distribution = runner.run_query(query.format(table=table), params={"county_fips": county_fips})
+    long_distribution = (
+        distribution
+        .melt(id_vars=["COUNTY_FIPS", "COUNTY", "NTA_CODE"], var_name=table, value_name="population")
+        .groupby(table, as_index=False)["population"].sum()
+    )
+    return long_distribution
+
+
 def get_nta_list(county: str) -> pd.DataFrame:
     query = """
     SELECT NTA_CODE, NTA_NAME
