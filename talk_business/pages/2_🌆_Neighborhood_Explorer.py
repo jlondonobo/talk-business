@@ -97,11 +97,13 @@ with col2:
     st.plotly_chart(plot, use_container_width=True)
 
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
-    ["Age", "Income", "Rent", "Race", "Occupation", "Enrollment"]
+st.markdown("## Neighborhood details")
+tab1, tab2, tab3 = st.tabs(
+    ["Demographic", "Economic", "Other"]
 )
 
 with tab1:
+    # Age
     age_plot = distributions.plot_age_dist(
         county_select,
         nta_select,
@@ -109,8 +111,20 @@ with tab1:
         compare_county,
     )
     st.plotly_chart(age_plot, use_container_width=True)
+    
+    # Todo: Gender
+    
+    # Race
+    race_plot = distributions.plot_race_dist(
+        county_select,
+        nta_select,
+        share,
+        compare_county,
+    )
+    st.plotly_chart(race_plot, use_container_width=True)
 
 with tab2:
+    # Income
     income_plot = distributions.plot_family_income_dist(
         county_select,
         nta_select,
@@ -120,7 +134,7 @@ with tab2:
     income_plot.update_layout(hovermode="x")
     st.plotly_chart(income_plot, use_container_width=True)
 
-with tab3:
+    # Rent
     rent_plot = distributions.plot_rent_dist(
         county_select,
         nta_select,
@@ -129,16 +143,7 @@ with tab3:
     )
     st.plotly_chart(rent_plot, use_container_width=True)
 
-with tab4:
-    race_plot = distributions.plot_race_dist(
-        county_select,
-        nta_select,
-        share,
-        compare_county,
-    )
-    st.plotly_chart(race_plot, use_container_width=True)
-
-with tab5:
+    # Occupation
     occupation_plot = distributions.plot_occupation_dist(
         county_select,
         nta_select,
@@ -147,7 +152,11 @@ with tab5:
     )
     st.plotly_chart(occupation_plot, use_container_width=True)
 
-with tab6:
+
+with tab3:
+    # Todo: People per home
+    
+    # Enrollment
     enrollemnt_plot = distributions.plot_enrollment_dist(
         county_select,
         nta_select,
