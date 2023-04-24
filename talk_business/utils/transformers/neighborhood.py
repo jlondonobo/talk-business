@@ -1,4 +1,5 @@
 import pandas as pd
+from utils.transformers import constants as const
 
 
 def map_to_category(s: pd.Series, mapper: dict[str, str]) -> pd.Categorical:
@@ -57,9 +58,7 @@ def resort_categories(
 
 
 def parse_occupation(
-    data: pd.DataFrame,
-    occupation_mapper: dict[str, str],
-    n: int = 10
+    data: pd.DataFrame, occupation_mapper: dict[str, str], n: int = 10
 ) -> pd.DataFrame:
     """Occupation data comes with encoded names."""
     return (
@@ -70,4 +69,72 @@ def parse_occupation(
             .map(occupation_mapper)
             .str.replace(" occupations", "")
         )
+    )
+
+
+def transform_age(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Assign 'AGE_CATEGORY' and compute share.
+    """
+    return data.assign(
+        AGE_CATEGORY=lambda df: map_to_category(df["AGE_GROUPS"], const.AGE_CATEGORY),
+        pop_share=lambda df: compute_share(df["population"]),
+    )
+
+
+def transform_enrollment(data) -> pd.DataFrame:
+    """
+    Resort enrollment categories and compute share.
+    """
+    return (
+        data
+        .pipe(resort_categories, "ENROLLMENT_GROUPS", const.SORTED_ENROLLMENT)
+        .assign(pop_share=lambda df: compute_share(df["population"]))
+    )
+
+
+def transform_family_income(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Bin family income in larger bins and compute share.
+    """
+    return (
+        data
+        .pipe(aggregate, "FAMILY_INCOME_GROUPS", const.FAMILY_INCOME_GROUPPED)
+        .assign(pop_share=lambda df: compute_share(df["population"]))
+    )
+
+
+def transform_occupation(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Parse occupation data and compute share.
+    """
+    return (
+        data
+        .assign(
+            pop_share=lambda df: compute_share(df["population"]),
+            OCCUPATION_GROUPS=data["OCCUPATION_GROUPS"].map(const.OCCUPATION_MAPPER),
+        )
+        .sort_values("population", ascending=True)
+    )
+
+
+def transform_race(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Group races and compute share.
+    """
+    return (
+        data
+        .pipe(aggregate, "RACE_GROUPS", const.RACE_GROUPS_MAPPER, False)
+        .assign(pop_share=lambda df: compute_share(df["population"]))
+    )
+
+
+def transform_rent(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Bin rent in larger bins and compute share.
+    """
+    return (
+        data
+        .pipe(aggregate, "RENT_GROUPS", const.RENT_MAPPER)
+        .assign(pop_share=lambda df: compute_share(df["population"]))
     )
