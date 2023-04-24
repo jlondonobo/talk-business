@@ -1,4 +1,5 @@
 import plotly.graph_objects as go
+from utils.names import get_county_name, get_nta_name
 from utils.plots import neighborhood as nplot
 from utils.sql import neighborhood_explorer as ne
 from utils.transformers import neighborhood as ntransform
@@ -15,12 +16,14 @@ def plot_age_dist(
         county = ne.get_county_distribution(TABLE, county_fips)
         county = ntransform.transform_age(county)
 
+        nta_name = get_nta_name(nta_code)
+        county_name = get_county_name(county_fips) + " County"
         title = (
-            f"<b>What is the age of {nta_code} residents?<br>"
-            f"<sup>{nta_code} vs {county_fips}"
+            f"<b>What is the age of {nta_name}'s residents?<br>"
+            f"<sup>{nta_name} vs {county_name}"
         )
         return nplot.compare_distributions(
-            age, county, TABLE, share, title, nta_code, county_fips
+            age, county, TABLE, share, title, nta_name, county_name
         )
     return nplot.distribution(
         age,
@@ -43,12 +46,14 @@ def plot_family_income_dist(
         county = ne.get_county_distribution(TABLE, county_fips)
         county = ntransform.transform_family_income(county)
 
+        nta_name = get_nta_name(nta_code)
+        county_name = get_county_name(county_fips) + " County"
         title = (
-            f"<b>How much do families in {nta_code} earn each year?<br>"
-            f"<sup>{nta_code} vs {county_fips}"
+            f"<b>How much do families in {nta_name} earn each year?<br>"
+            f"<sup>{nta_name} vs {county_name}"
         )
         return nplot.compare_distributions(
-            income, county, TABLE, share, title, nta_code, county_fips
+            income, county, TABLE, share, title, nta_name, county_name
         )
 
     return nplot.distribution(
@@ -70,12 +75,14 @@ def plot_rent_dist(
         county = ne.get_county_distribution(TABLE, county_fips)
         county = ntransform.transform_rent(county)
 
+        nta_name = get_nta_name(nta_code)
+        county_name = get_county_name(county_fips) + " County"
         title = (
-            f"<b>How much do people in {nta_code} pay for rent?<br>"
-            f"<sup>{nta_code} vs {county_fips}"
+            f"<b>How much do people in {nta_name} pay for rent?<br>"
+            f"<sup>{nta_name} vs {county_name}"
         )
         return nplot.compare_distributions(
-            rent, county, TABLE, share, title, nta_code, county_fips
+            rent, county, TABLE, share, title, nta_name, county_name
         )
 
     return nplot.distribution(
@@ -97,12 +104,14 @@ def plot_race_dist(
         county = ne.get_county_distribution(TABLE, county_fips)
         county = ntransform.transform_race(county)
 
+        nta_name = get_nta_name(nta_code)
+        county_name = get_county_name(county_fips) + " County"
         title = (
-            f"<b>What are the races of {nta_code}'s population?<br>"
-            f"<sup>{nta_code} vs {county_fips}"
+            f"<b>What are the races of {nta_name}'s population?<br>"
+            f"<sup>{nta_name} vs {county_name}"
         )
         return nplot.compare_distributions(
-            race, county, TABLE, share, title, nta_code, county_fips
+            race, county, TABLE, share, title, nta_name, county_name
         )
 
     return nplot.distribution(
@@ -124,12 +133,14 @@ def plot_occupation_dist(
         county = ne.get_county_distribution(TABLE, county_fips)
         county = ntransform.transform_occupation(county)
 
+        nta_name = get_nta_name(nta_code)
+        county_name = get_county_name(county_fips) + " County"
         title = (
-            f"<b>What jobs do people from {nta_code} work?<br>"
-            f"<sup>{nta_code} vs {county_fips}"
+            f"<b>What jobs do people from {nta_name} work?<br>"
+            f"<sup>{nta_name} vs {county_name}"
         )
         return nplot.compare_distributions(
-            occupation, county, TABLE, share, title, nta_code, county_fips
+            occupation, county, TABLE, share, title, nta_name, county_name
         )
     return nplot.distribution(
         occupation,
@@ -138,9 +149,6 @@ def plot_occupation_dist(
         title="Occupation",
         orient="h",
     )
-
-
-
 
 
 def plot_enrollment_dist(
@@ -154,12 +162,14 @@ def plot_enrollment_dist(
         county = ne.get_county_distribution(TABLE, county_fips)
         county = ntransform.transform_enrollment(county)
 
+        nta_name = get_nta_name(nta_code)
+        county_name = get_county_name(county_fips) + " County"
         title = (
-            f"<b>What stage of education are the currently-enrolled population  of {nta_code} going through?<br>"
-            f"<sup>{nta_code} vs {county_fips}"
+            f"<b>What stage of education are the currently-enrolled population of {nta_name} going through?<br>"
+            f"<sup>{nta_name} vs {county_name} County"
         )
         return nplot.compare_distributions(
-            enrollment, county, TABLE, share, title, nta_code, county_fips
+            enrollment, county, TABLE, share, title, nta_name, county_name
         )
 
     return nplot.distribution(

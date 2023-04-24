@@ -9,18 +9,13 @@ st.set_page_config(
     layout="wide",
 )
 from utils.flows import distributions
+from utils.names import get_county_name, get_nta_name
 from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql import neighborhood_explorer as ne
 
 st.markdown("# 🌆 Neighborhood Explorer")
 
-COUNTIES = {
-    "005": "Bronx",
-    "047": "Kings",
-    "061": "New York",
-    "081": "Queens",
-    "085": "Richmond",
-}
+DISPLAY_COUNTIES = ["005", "047", "061", "081", "085"]
 
 with st.sidebar:
     share = (
@@ -33,19 +28,25 @@ col1, col2 = st.columns(2)
 
 with col1:
     county_select = st.radio(
-        "County", list(COUNTIES.keys()), 0, format_func=COUNTIES.get, horizontal=True
+        "County", DISPLAY_COUNTIES, 0, format_func=get_county_name, horizontal=True
     )
 
     nta_options = (
-        ne.get_nta_list(county_select).set_index("NTA_CODE")["NTA_NAME"].to_dict()
+        ne.get_available_nta_list(county_select)["NTA_CODE"].to_list()
     )
 
     nta_select = st.selectbox(
-        "Neighborhood", list(nta_options.keys()), 0, format_func=nta_options.get
+        "Neighborhood", nta_options, 0, format_func=get_nta_name
     )
 with col2:
     shapes = ne.get_nta_geoms()
-    shape = shapes.query("NTA_CODE == @nta_select")
+    shape = (
+        shapes
+        .query("NTA_CODE == @nta_select")
+        .assign(
+            COUNTY=get_county_name(county_select),
+            NTA_NAME=get_nta_name(nta_select))
+    )
     centroid = shape["geometry"].values[0].centroid
     plot = plot_blocks_choropleth(
         shape,
@@ -55,7 +56,8 @@ with col2:
         uichange=True,
         zoom=10,
     )
-    plot.update_traces(marker_opacity=0.5)
+    plot.update_traces(marker_opacity=0.5, marker_line_width=1, marker_line_color="black")
+    plot.update_layout(height=200)
     st.plotly_chart(plot, use_container_width=True)
 
 
