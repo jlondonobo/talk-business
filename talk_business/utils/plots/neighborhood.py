@@ -18,6 +18,57 @@ LABELS = {
 }
 
 
+def vertical_distribuion(
+    data: pd.DataFrame,
+    labels: str,
+    share: bool,
+    title: str,
+    color: Union[str, None] = None,
+) -> go.Figure:
+    metric = "pop_share" if share else "population"
+    tickformat = ",.0%" if share else ",.0f"
+
+    fig = px.bar(
+        data,
+        x=labels,
+        y=metric,
+        text_auto=tickformat,
+        color=color,
+        labels=LABELS,
+        title=title,
+    )
+
+    fig.update_layout(xaxis_type="category")
+    fig.update_yaxes(tickformat=tickformat)
+    return fig
+
+
+def horizontal_distribuion(
+    data: pd.DataFrame,
+    labels: str,
+    share: bool,
+    title: str,
+    color: Union[str, None] = None,
+) -> go.Figure:
+    metric = "pop_share" if share else "population"
+    tickformat = ",.0%" if share else ",.0f"
+
+    fig = px.bar(
+        data,
+        x=metric,
+        y=labels,
+        text_auto=tickformat,
+        color=color,
+        labels=LABELS,
+        title=title,
+        orientation="h",
+    )
+
+    fig.update_layout(yaxis_type="category")
+    fig.update_xaxes(tickformat=tickformat)
+    return fig
+
+
 def distribution(
     data: pd.DataFrame,
     labels: str,
@@ -29,39 +80,10 @@ def distribution(
     """
     Plots a bar chart of the distribution of the data.
     """
-    if share:
-        metric = "pop_share"
-    else:
-        metric = "population"
-
-    tickformat = ",.0%" if metric == "pop_share" else ",.0f"
-
     if orient == "v":
-        x = labels
-        y = metric
-
+        return vertical_distribuion(data, labels, share, title, color)
     else:
-        x = metric
-        y = labels
-
-    fig = px.bar(
-        data,
-        x=x,
-        y=y,
-        text_auto=tickformat,
-        color=color,
-        labels=LABELS,
-        title=title,
-        orientation=orient,
-    )
-
-    if orient == "v":
-        fig.update_layout(xaxis_type="category")
-        fig.update_yaxes(tickformat=tickformat)
-    else:
-        fig.update_layout(yaxis_type="category")
-        fig.update_xaxes(tickformat=tickformat)
-    return fig
+        return horizontal_distribuion(data, labels, share, title, color)
 
 
 def plot_donut(data: pd.DataFrame, labels: str, title: str) -> go.Figure:
@@ -88,4 +110,48 @@ def plot_donut(data: pd.DataFrame, labels: str, title: str) -> go.Figure:
         ),
         height=300,
     )
+    return fig
+
+
+def compare_distributions(
+    data: pd.DataFrame,
+    comp_data: pd.DataFrame,
+    labels: str,
+    share: bool,
+    title: str,
+    data_name: str,
+    comp_data_name: str,
+) -> go.Figure:
+    """Plot a value from `main` in comparison to `comps`."""
+    values = "pop_share" if share else "population"
+    value_format = ".1%" if share else ",.0f"
+
+    fig = go.Figure(data=[
+        go.Bar(
+            x=comp_data[labels],
+            y=comp_data[values],
+            # marker_color='#DEDEDE',
+            # marker_line_color='rgb(8,48,107)',
+            marker_line_width=0,
+            name=comp_data_name,
+        ),
+        go.Bar(
+            x=data[labels],
+            y=data[values],
+            width=0.6,
+            # marker_color="blue",
+            # marker_line_color='#ffffff',
+            marker_line_width=0.0,
+            name=data_name,
+        )
+    ])
+    fig.update_layout(
+        barmode="overlay",
+        title=title,
+        legend_traceorder="reversed",
+        xaxis_type="category",
+    )
+    fig.update_xaxes(title_text=comp_data[labels].name, type="category")
+    fig.update_yaxes(title_text=comp_data[values].name, tickformat=value_format)
+    fig.update_layout(hovermode="x")
     return fig
