@@ -55,7 +55,6 @@ def plot_blocks_choropleth(
         margin=dict(l=0, r=0, t=0, b=0),
         showlegend=False,
         uirevision=uirevision,
-        height=200,
     )
-    fig.update_traces(marker_line_width=1, marker_line_color="white")
+    fig.update_traces(marker_line_width=0.3, marker_line_color="white")
     return fig
