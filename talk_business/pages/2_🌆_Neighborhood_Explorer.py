@@ -13,20 +13,10 @@ from utils.names import get_county_name, get_nta_name
 from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql import neighborhood_explorer as ne
 
-st.markdown("# 🌆 Neighborhood Explorer")
-
 DISPLAY_COUNTIES = ["005", "047", "061", "081", "085"]
 
+# Sidebar
 with st.sidebar:
-    share = (
-        st.radio("Distribution display", ["Share", "Total"], horizontal=True) == "Share"
-    )
-    compare_county = st.checkbox("Compare with county", value=False)
-
-
-col1, col2 = st.columns(2)
-
-with col1:
     county_select = st.radio(
         "County", DISPLAY_COUNTIES, 0, format_func=get_county_name, horizontal=True
     )
@@ -38,6 +28,52 @@ with col1:
     nta_select = st.selectbox(
         "Neighborhood", nta_options, 0, format_func=get_nta_name
     )
+    
+    share = (
+        st.radio("Distribution display", ["Percentage", "Total"], horizontal=True) == "Percentage"
+    )
+    compare_county = st.checkbox("Compare with county", value=False)
+
+
+st.markdown(
+    f"""
+    <h1> 🌆 Neighborhood Explorer </h1>
+    <h2> {get_nta_name(nta_select)} - {get_county_name(county_select)} County </h2>
+    """,
+    unsafe_allow_html=True,
+)
+
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.metric(
+        label="Area",
+        value=200,
+    )
+    st.markdown("sq. mi.")
+with col2:
+    st.metric(
+        label="Population",
+        value=3.2,
+    )
+    st.markdown("Thousand people")
+with col3:
+    st.metric(
+        label="Density",
+        value=1000,
+    )
+    st.markdown("People / sq. mi.")
+with col4:
+    st.metric(
+        label="Total income",
+        value=3.4,
+    )
+    st.markdown("Million dollars")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("### Neighborhood Persona")
+    
 with col2:
     shapes = ne.get_nta_geoms()
     shape = (
@@ -61,11 +97,13 @@ with col2:
     st.plotly_chart(plot, use_container_width=True)
 
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
-    ["Age", "Income", "Rent", "Race", "Occupation", "Enrollment"]
+st.markdown("## Neighborhood details")
+tab1, tab2, tab3 = st.tabs(
+    ["Demographic", "Economic", "Other"]
 )
 
 with tab1:
+    # Age
     age_plot = distributions.plot_age_dist(
         county_select,
         nta_select,
@@ -73,8 +111,20 @@ with tab1:
         compare_county,
     )
     st.plotly_chart(age_plot, use_container_width=True)
+    
+    # Todo: Gender
+    
+    # Race
+    race_plot = distributions.plot_race_dist(
+        county_select,
+        nta_select,
+        share,
+        compare_county,
+    )
+    st.plotly_chart(race_plot, use_container_width=True)
 
 with tab2:
+    # Income
     income_plot = distributions.plot_family_income_dist(
         county_select,
         nta_select,
@@ -84,7 +134,7 @@ with tab2:
     income_plot.update_layout(hovermode="x")
     st.plotly_chart(income_plot, use_container_width=True)
 
-with tab3:
+    # Rent
     rent_plot = distributions.plot_rent_dist(
         county_select,
         nta_select,
@@ -93,16 +143,7 @@ with tab3:
     )
     st.plotly_chart(rent_plot, use_container_width=True)
 
-with tab4:
-    race_plot = distributions.plot_race_dist(
-        county_select,
-        nta_select,
-        share,
-        compare_county,
-    )
-    st.plotly_chart(race_plot, use_container_width=True)
-
-with tab5:
+    # Occupation
     occupation_plot = distributions.plot_occupation_dist(
         county_select,
         nta_select,
@@ -111,7 +152,11 @@ with tab5:
     )
     st.plotly_chart(occupation_plot, use_container_width=True)
 
-with tab6:
+
+with tab3:
+    # Todo: People per home
+    
+    # Enrollment
     enrollemnt_plot = distributions.plot_enrollment_dist(
         county_select,
         nta_select,

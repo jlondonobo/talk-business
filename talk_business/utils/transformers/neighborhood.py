@@ -126,6 +126,7 @@ def transform_race(data: pd.DataFrame) -> pd.DataFrame:
         data
         .pipe(aggregate, "RACE_GROUPS", const.RACE_GROUPS_MAPPER, False)
         .assign(pop_share=lambda df: compute_share(df["population"]))
+        .sort_values("population", ascending=False)
     )
 
 
