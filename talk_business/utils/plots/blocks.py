@@ -40,6 +40,12 @@ def plot_blocks_choropleth(
         color_continuous_scale="Sunsetdark",
         center=center,
         zoom=zoom,
+        custom_data=["COUNTY", "NTA_NAME"],
+        hover_data={
+            "COUNTY": True,
+            "NTA_NAME": True,
+            value: True,
+        },
     )
 
     uirevision = "Don't change" if uichange else None

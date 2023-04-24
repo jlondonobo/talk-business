@@ -6,8 +6,8 @@ def dissolve_count(
     column: str,
 ) -> gpd.GeoDataFrame:
     return (
-        gdf.filter(["TRACT_CODE", "COUNTY_FIPS", "COUNTY", column, "geometry"])
-        .dissolve(by=["COUNTY", "TRACT_CODE", "COUNTY_FIPS"], aggfunc="sum")
+        gdf.filter(["COUNTY_FIPS", "COUNTY", "NTA_NAME", "TRACT_CODE", column, "geometry"])
+        .dissolve(by=["COUNTY_FIPS", "COUNTY", "NTA_NAME", "TRACT_CODE"], aggfunc="sum")
         .reset_index()
     )
 
@@ -19,9 +19,9 @@ def dissolve_weighted_average(
     weight: str,
 ) -> gpd.GeoDataFrame:
     return (
-        gdf.filter(["COUNTY", "COUNTY_FIPS", by, "geometry", column, weight])
+        gdf.filter(["COUNTY_FIPS", "COUNTY", "NTA_NAME", by, "geometry", column, weight])
         .assign(premultiplied=lambda df: df[column] * df[weight])
-        .dissolve(by=[by, "COUNTY", "COUNTY_FIPS"], aggfunc="sum")
+        .dissolve(by=["COUNTY_FIPS", "COUNTY", "NTA_NAME", by], aggfunc="sum")
         .reset_index()
         .assign(**{column: lambda df: df["premultiplied"] / df[weight]})
     )
