@@ -37,12 +37,16 @@ def get_county_distribution(table: str, county_fips: str) -> pd.DataFrame:
     return long_distribution
 
 
-def get_nta_list(county: str) -> pd.DataFrame:
+def get_available_nta_list(county: str) -> pd.DataFrame:
     query = """
-    SELECT NTA_CODE, NTA_NAME
-    FROM PERSONAL.PUBLIC.NTA_MAPPER
-    WHERE COUNTY_FIPS = %(county)s
-    GROUP BY (NTA_CODE, NTA_NAME);
+    SELECT NTA_CODE
+    FROM PERSONAL.PUBLIC.NTA_MAPPER as nta
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B01" USING (census_block_group)
+    WHERE c.COUNTY_FIPS = %(county)s
+    GROUP BY (NTA_CODE, NTA_NAME)
+    HAVING SUM("B01001e1") > 100
+    ORDER BY NTA_NAME;
     """
     return runner.run_query(query, params={"county": county})
 
