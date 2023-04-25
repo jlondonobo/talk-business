@@ -100,6 +100,17 @@ def fetch_neighborhood_statistics():
     return data
 
 
+def fetch_county_geoms(county_fips: str) -> gpd.GeoDataFrame:
+    """Return county geometries for a single county."""
+    query = """
+    SELECT COUNTY_FIPS, GEOMETRY
+    FROM PERSONAL.PUBLIC.NTA_GEOGRAPHY
+    WHERE COUNTY_FIPS = %(county_fips)s;
+    """
+    data = runner.run_query(query, params={"county_fips": county_fips})
+    return geo.to_gdf(data)
+
+
 def neighborhood_stat(
     data: pd.DataFrame,
     nta_code: str,
