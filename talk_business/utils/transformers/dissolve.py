@@ -1,6 +1,12 @@
 import geopandas as gpd
 
 
+def dissolve_simple(data: gpd.GeoDataFrame, column: str) -> gpd.GeoDataFrame:
+    """Simple geometry dissolve"""
+    return data.dissolve(by=column).reset_index()
+
+
+
 def dissolve_count(
     gdf: gpd.GeoDataFrame,
     column: str,

@@ -1,3 +1,5 @@
+import json
+
 import streamlit as st
 
 st.set_page_config(
@@ -8,6 +10,7 @@ from utils.flows import distributions
 from utils.names import get_county_name, get_nta_name
 from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql import neighborhood_explorer as ne
+from utils.transformers import dissolve
 
 DISPLAY_COUNTIES = ["005", "047", "061", "081", "085"]
 
@@ -72,16 +75,21 @@ with col4:
     
 
 col1, col2 = st.columns(2)
-
 with col1:
     st.markdown("### Neighborhood Persona")
 
+# Map
 with col2:
     shapes = ne.get_nta_geoms()
     shape = shapes.query("NTA_CODE == @nta_select").assign(
         COUNTY=get_county_name(county_select), NTA_NAME=get_nta_name(nta_select)
     )
     centroid = shape["geometry"].values[0].centroid
+
+    county_geom = ne.fetch_county_geoms(county_select)
+    county_geom = dissolve.dissolve_simple(county_geom, "COUNTY_FIPS")["geometry"].to_json()
+    county_geom = json.loads(county_geom)
+
     plot = plot_blocks_choropleth(
         shape,
         "NTA_CODE",
@@ -91,9 +99,22 @@ with col2:
         zoom=10,
     )
     plot.update_traces(
-        marker_opacity=0.5, marker_line_width=1, marker_line_color="black"
+        marker_opacity=0.5,
+        marker_line_width=1,
+        marker_line_color="black",   
     )
-    plot.update_layout(height=200)
+    plot.update_layout(
+        height=200,
+        mapbox_layers=[
+            dict(
+                sourcetype="geojson",
+                source=county_geom,
+                color="#303030",
+                type="line",
+                line=dict(width=1),
+            )
+        ],
+    )
     st.plotly_chart(plot, use_container_width=True)
 
 
