@@ -16,7 +16,7 @@ def run_query(conn, query, params=None):
 
 
 def export_data_to_snowflake(conn, data: pd.DataFrame, table_name: str):
-    mapper = {"int64": "numeric", "object": "string", "float64": "numeric"}
+    mapper = {"int64": "numeric", "object": "string", "float64": "decimal(20,5)"}
     cols = {key: mapper[str(val)] for key, val in data.dtypes.to_dict().items()}
     parsed_cols = ", ".join([f'"{key}" {val}' for key, val in cols.items()])
 
