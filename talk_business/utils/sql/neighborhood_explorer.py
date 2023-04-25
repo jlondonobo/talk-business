@@ -1,3 +1,5 @@
+from typing import Union
+
 import geopandas as gpd
 import pandas as pd
 from utils.sql import runner
@@ -11,11 +13,11 @@ def get_distribution(table: str, nta: str) -> pd.DataFrame:
     WHERE NTA_CODE = %(nta)s
     """
     distribution = runner.run_query(query.format(table=table), params={"nta": nta})
-    long_distribution = (
-        distribution
-        .melt(id_vars=["COUNTY_FIPS", "COUNTY", "NTA_CODE"], var_name=table, value_name="population")
-        .filter([table, "population"])
-    )
+    long_distribution = distribution.melt(
+        id_vars=["COUNTY_FIPS", "COUNTY", "NTA_CODE"],
+        var_name=table,
+        value_name="population",
+    ).filter([table, "population"])
     return long_distribution
 
 
@@ -28,11 +30,17 @@ def get_county_distribution(table: str, county_fips: str) -> pd.DataFrame:
     FROM PERSONAL.PUBLIC.{table}
     WHERE COUNTY_FIPS = %(county_fips)s
     """
-    distribution = runner.run_query(query.format(table=table), params={"county_fips": county_fips})
+    distribution = runner.run_query(
+        query.format(table=table), params={"county_fips": county_fips}
+    )
     long_distribution = (
-        distribution
-        .melt(id_vars=["COUNTY_FIPS", "COUNTY", "NTA_CODE"], var_name=table, value_name="population")
-        .groupby(table, as_index=False)["population"].sum()
+        distribution.melt(
+            id_vars=["COUNTY_FIPS", "COUNTY", "NTA_CODE"],
+            var_name=table,
+            value_name="population",
+        )
+        .groupby(table, as_index=False)["population"]
+        .sum()
     )
     return long_distribution
 
@@ -68,3 +76,35 @@ def get_nta_shape(nta: str) -> gpd.GeoDataFrame:
     """
     data = runner.run_query(query, params={"nta": nta})
     return geo.to_gdf(data)
+
+
+def fetch_neighborhood_statistics():
+    """Return neighborhood statistics for all neighborhoods."""
+    query = """
+    SELECT 
+        NTA_CODE,
+        SUM(amount_land) * 3.861e-7 as AREA,
+        SUM("B01001e1") POPULATION, 
+        SUM("B01001e1") / SUM(amount_land * 3.861e-7) as POP_DENSITY,
+        SUM("B19313e1") AS TOTAL_INCOME
+    FROM OPENCENSUSDATA.PUBLIC."2020_CBG_B01" AS
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B19" USING(census_block_group)
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_METADATA_CBG_GEOGRAPHIC_DATA" USING(census_block_group)
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c USING(census_block_group)
+    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS
+    GROUP BY NTA_CODE
+    HAVING SUM(amount_land) > 0;
+    """
+    data = runner.run_query(query)
+    data = data.set_index("NTA_CODE")
+    return data
+
+
+def neighborhood_stat(
+    data: pd.DataFrame,
+    nta_code: str,
+    stat: str,
+) -> Union[int, float]:
+    """Return neighborhood statistics for a single neighborhood."""
+    return data.at[nta_code, stat]
+

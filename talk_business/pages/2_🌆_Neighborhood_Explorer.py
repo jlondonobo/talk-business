@@ -1,9 +1,5 @@
 import streamlit as st
 
-# Read the data
-# Plot the data
-# Include plot in layout
-
 st.set_page_config(
     page_title="🌆 Neighborhood Explorer",
     layout="wide",
@@ -21,16 +17,13 @@ with st.sidebar:
         "County", DISPLAY_COUNTIES, 0, format_func=get_county_name, horizontal=True
     )
 
-    nta_options = (
-        ne.get_available_nta_list(county_select)["NTA_CODE"].to_list()
-    )
+    nta_options = ne.get_available_nta_list(county_select)["NTA_CODE"].to_list()
 
-    nta_select = st.selectbox(
-        "Neighborhood", nta_options, 0, format_func=get_nta_name
-    )
-    
+    nta_select = st.selectbox("Neighborhood", nta_options, 0, format_func=get_nta_name)
+
     share = (
-        st.radio("Distribution display", ["Percentage", "Total"], horizontal=True) == "Percentage"
+        st.radio("Distribution display", ["Percentage", "Total"], horizontal=True)
+        == "Percentage"
     )
     compare_county = st.checkbox("Compare with county", value=False)
 
@@ -43,45 +36,50 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+STATISTICS = ne.fetch_neighborhood_statistics()
+
+
+def statistic(nta_code: str, statistic: str) -> float:
+    return ne.neighborhood_stat(STATISTICS, nta_code, statistic)
+
+
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(
-        label="Area",
-        value=200,
+        label="Population",
+        value=f"{statistic(nta_select, 'POPULATION')/ 1000:,.0f}K",
     )
-    st.markdown("sq. mi.")
+    st.markdown("People")
 with col2:
     st.metric(
-        label="Population",
-        value=3.2,
+        label="Total income",
+        value=f"${statistic(nta_select, 'TOTAL_INCOME') / 1_000_000:,.0f}",
     )
-    st.markdown("Thousand people")
+    st.markdown("Million dollars")
+
 with col3:
     st.metric(
         label="Density",
-        value=1000,
+        value=f"{statistic(nta_select, 'POP_DENSITY') / 1000:,.0f}K",
     )
     st.markdown("People / sq. mi.")
 with col4:
     st.metric(
-        label="Total income",
-        value=3.4,
+        label="Area",
+        value=f"{statistic(nta_select, 'AREA'):.2f}",
     )
-    st.markdown("Million dollars")
+    st.markdown("sq. mi.")
+    
 
 col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("### Neighborhood Persona")
-    
+
 with col2:
     shapes = ne.get_nta_geoms()
-    shape = (
-        shapes
-        .query("NTA_CODE == @nta_select")
-        .assign(
-            COUNTY=get_county_name(county_select),
-            NTA_NAME=get_nta_name(nta_select))
+    shape = shapes.query("NTA_CODE == @nta_select").assign(
+        COUNTY=get_county_name(county_select), NTA_NAME=get_nta_name(nta_select)
     )
     centroid = shape["geometry"].values[0].centroid
     plot = plot_blocks_choropleth(
@@ -92,15 +90,15 @@ with col2:
         uichange=True,
         zoom=10,
     )
-    plot.update_traces(marker_opacity=0.5, marker_line_width=1, marker_line_color="black")
+    plot.update_traces(
+        marker_opacity=0.5, marker_line_width=1, marker_line_color="black"
+    )
     plot.update_layout(height=200)
     st.plotly_chart(plot, use_container_width=True)
 
 
 st.markdown("## Neighborhood details")
-tab1, tab2, tab3 = st.tabs(
-    ["Demographic", "Economic", "Other"]
-)
+tab1, tab2, tab3 = st.tabs(["Demographic", "Economic", "Other"])
 
 with tab1:
     # Age
@@ -111,9 +109,9 @@ with tab1:
         compare_county,
     )
     st.plotly_chart(age_plot, use_container_width=True)
-    
+
     # Todo: Gender
-    
+
     # Race
     race_plot = distributions.plot_race_dist(
         county_select,
@@ -155,7 +153,7 @@ with tab2:
 
 with tab3:
     # Todo: People per home
-    
+
     # Enrollment
     enrollemnt_plot = distributions.plot_enrollment_dist(
         county_select,
