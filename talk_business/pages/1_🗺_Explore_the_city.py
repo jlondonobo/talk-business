@@ -131,7 +131,6 @@ for index, col in enumerate(columns):
                 id = "TRACT_CODE"
                 data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
-
     map = plot_blocks_choropleth(
         data,
         id,
@@ -139,7 +138,8 @@ for index, col in enumerate(columns):
         center={"lat": centroid.y, "lon": centroid.x},
         zoom=zoom,
     )
-    col.plotly_chart(map, use_container_width=True)
 
+    tab1, tab2 = col.tabs(["Map", "Histogram"])
+    tab1.plotly_chart(map, use_container_width=True)
     histogram = plot_distribution_by_area(data, cname)
-    col.plotly_chart(histogram, use_container_width=True)
+    tab2.plotly_chart(histogram, use_container_width=True)

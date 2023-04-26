@@ -57,4 +57,16 @@ def plot_blocks_choropleth(
         uirevision=uirevision,
     )
     fig.update_traces(marker_line_width=0.3, marker_line_color="white")
+    fig.update_coloraxes(
+        colorbar=dict(
+            orientation="h",
+            y=0,
+            tickfont=dict(color="black"),
+            title=dict(side="top", font=dict(color="black")),
+            thickness=5,
+            len=0.4,
+            x=0.93,
+            xanchor="right",
+        )
+    )
     return fig
