@@ -4,4 +4,4 @@
   style="border-radius: 10px;"
   ></a>
 </p>
-<p align="center"><i>Spend your advertisement money wisely. Improve your reach through data.</i></p>`
+<p align="center"><i>Understand New York City. Improve your reach through data.</i></p>`
