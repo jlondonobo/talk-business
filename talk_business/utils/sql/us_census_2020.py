@@ -174,4 +174,4 @@ def get_nta_shapes(county_fips_collection: list[str]) -> gpd.GeoSeries:
         query,
         params={"county_fips_collection": encode_list(county_fips_collection)}
     )
-    return gpd.GeoSeries.from_wkb(df["GEOMETRY"], crs="EPSG:4326")
+    return gpd.GeoSeries.from_wkt(df["GEOMETRY"], crs="EPSG:4326")

@@ -2,8 +2,8 @@ import json
 
 import streamlit as st
 from utils.columns import COLUMNS
+from utils.load_local_data import load_nta_centroids
 from utils.options import COUNTIES, METRICS
-from utils.plots.blocks import plot_blocks_choropleth
 from utils.plots.histograms import plot_distribution_by_area
 from utils.transformers.dissolve import dissolve_count, dissolve_weighted_average
 
@@ -14,7 +14,9 @@ st.set_page_config(
 
 # Need to load this after setting page config
 # else the page will crash due to not being first function ran
+from utils.load_local_data import load_nta_centroids
 from utils.names import get_county_name, get_nta_name
+from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql.us_census_2020 import (
     get_bounding_box_points,
     get_nta_shapes,
@@ -43,7 +45,8 @@ with st.sidebar:
         horizontal=True,
         help="Use **tracts** for easier exploration. Use **blocks** for more detail."
     )
-    
+    display_ntas = st.checkbox("Display neighborhoods", value=False, help="Will show neighborhood boundaries and their names on the map.")
+
     maps = st.radio("How many characteristics do you want to explore?", [1, 2, 3], index=1, horizontal=True)
 
 summary_statistics = get_statistics(counties)
@@ -73,7 +76,11 @@ with col4:
 
 
 area, centroid = get_bounding_box_points(counties)
-nta_shapes = json.loads(get_nta_shapes(counties).to_json())
+
+if display_ntas:
+    nta_shapes = json.loads(get_nta_shapes(counties).to_json())
+else:
+    nta_shapes = None
 
 
 zoom = 12
@@ -149,7 +156,10 @@ for index, col in enumerate(columns):
                 data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
                 id = "TRACT_CODE"
                 data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
-
+  
+    tab1, tab2 = col.tabs(["Map", "Histogram"])
+    
+    centroids = load_nta_centroids(counties)
     map = plot_blocks_choropleth(
         data,
         id,
@@ -157,10 +167,9 @@ for index, col in enumerate(columns):
         center={"lat": centroid.y, "lon": centroid.x},
         zoom=zoom,
         uichange=True,
-        borders=nta_shapes
+        borders=nta_shapes,
+        nta_centroids=centroids,
     )
-   
-    tab1, tab2 = col.tabs(["Map", "Histogram"])
     tab1.plotly_chart(map, use_container_width=True)
     histogram = plot_distribution_by_area(data, cname)
     tab2.plotly_chart(histogram, use_container_width=True)
