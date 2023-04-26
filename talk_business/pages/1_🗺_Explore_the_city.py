@@ -66,7 +66,13 @@ with col1:
         "Select a metric", list(METRICS.keys()), format_func=METRICS.get
     )
 with col2:
-    level = st.radio("Select an aggregation level", ["BLOCK", "TRACT"], horizontal=True)
+    level = st.radio(
+        "Select an aggregation level",
+        ["TRACT", "BLOCK"],
+        format_func=lambda x: f"{x.title()}s",
+        horizontal=True,
+        help="Use **tracts** for easier exploration. Use **blocks** for more detail."
+    )
     id = "CENSUS_BLOCK_GROUP"
 # Get Data
 if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
