@@ -1,34 +1,34 @@
 COLUMNS = {
     "PER_CAPITA_INCOME": {
         "type": "METRIC",
-        "label": "Per capita income (12 months)",
+        "label": "Income",
         "table": "B19",
         "code": "B19301e1",
         "total": "B01003e1", 
     },
     "MEDIAN_GROSS_RENT": {
         "type": "METRIC",
-        "label": "Median gross rent",
+        "label": "Rent",
         "table": "B25",
         "code": "B25064e1",
         "total": "B25054e1"
     },
     "HOUSEHOLD_SIZE": {
         "type": "METRIC",
-        "label": "Household size",
+        "label": "People per household",
         "table": "B25",
         "code": "B25010e1",
         "total": "B25003e1",
     },
     "TOTAL_POPULATION": {
         "type": "COUNT_METRIC",
-        "label": "Population",
+        "label": "Total population",
         "table": "B01",
         "code": "B01003e1",
     },
     "MEDIAN_AGE": {
         "type": "SEGMENTED_METRIC",
-        "label": "Median age",
+        "label": "Mean age",
         "table": "B01",
         "total": "B01002e1",
         "segments": {
@@ -53,7 +53,7 @@ COLUMNS = {
     },
     "OCCUPANCY_STATUS": {
         "type": "SEGMENTED_COUNT",
-        "label": "Dwelling occupancy status",
+        "label": "Available properties",
         "table": "B25",
         "total": "B25002e1",
         "segments": {

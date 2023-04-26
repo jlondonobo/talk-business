@@ -78,7 +78,8 @@ if area > 1_000_000_000:
 
 columns = st.columns(maps)
 for index, col in enumerate(columns):
-    metric = col.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get, key=index)
+    metric = col.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get, index=index, key=index)
+
     id = "CENSUS_BLOCK_GROUP"
     # Get Data
     if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
