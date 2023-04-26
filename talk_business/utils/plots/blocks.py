@@ -5,9 +5,10 @@ import geopandas as gpd
 import plotly.express as px
 import plotly.graph_objects as go
 from dotenv import load_dotenv
+from utils.columns import COLUMNS
 
 load_dotenv()
-
+LABELS = {col: meta["full_label"] for col, meta in COLUMNS.items()}
 
 def plot_blocks_choropleth(
     data: gpd.GeoDataFrame,
@@ -46,6 +47,7 @@ def plot_blocks_choropleth(
             "NTA_NAME": True,
             value: True,
         },
+        labels=LABELS,
     )
 
     uirevision = "Don't change" if uichange else None

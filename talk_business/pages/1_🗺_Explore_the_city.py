@@ -149,6 +149,7 @@ for index, col in enumerate(columns):
         cname,
         center={"lat": centroid.y, "lon": centroid.x},
         zoom=zoom,
+        uichange=True,
     )
 
     tab1, tab2 = col.tabs(["Map", "Histogram"])

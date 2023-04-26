@@ -1,6 +1,10 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from utils.columns import COLUMNS
+
+LABELS = {col: meta["full_label"] for col, meta in COLUMNS.items()}
+LABELS.update({"COUNTY": "County"})
 
 
 def plot_distribution_by_area(
@@ -17,7 +21,7 @@ def plot_distribution_by_area(
         color=area,
         barmode="overlay",
         histnorm='probability',
-        labels={"COUNTY": "County"},
+        labels=LABELS,
     )
     fig.update_yaxes(title_text="Share of Census Block Groups", tickformat=".0%")
     fig.update_traces(opacity=0.6)

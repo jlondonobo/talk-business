@@ -2,6 +2,7 @@ COLUMNS = {
     "PER_CAPITA_INCOME": {
         "type": "METRIC",
         "label": "Income",
+        "full_label": "Mean per-capita income (12mo. - $USD)",
         "table": "B19",
         "code": "B19301e1",
         "total": "B01003e1", 
@@ -9,13 +10,15 @@ COLUMNS = {
     "MEDIAN_GROSS_RENT": {
         "type": "METRIC",
         "label": "Rent",
+        "full_label": "Average monthly rent ($USD)",
         "table": "B25",
         "code": "B25064e1",
         "total": "B25054e1"
     },
     "HOUSEHOLD_SIZE": {
         "type": "METRIC",
-        "label": "People per household",
+        "label": "Household size",
+        "full_label": "Average # people per household",
         "table": "B25",
         "code": "B25010e1",
         "total": "B25003e1",
@@ -23,12 +26,14 @@ COLUMNS = {
     "TOTAL_POPULATION": {
         "type": "COUNT_METRIC",
         "label": "Total population",
+        "full_label": "Total population",
         "table": "B01",
         "code": "B01003e1",
     },
     "MEDIAN_AGE": {
         "type": "SEGMENTED_METRIC",
-        "label": "Mean age",
+        "label": "Age",
+        "full_label": "Median age",
         "table": "B01",
         "total": "B01002e1",
         "segments": {
@@ -39,6 +44,7 @@ COLUMNS = {
     "RACE": {
         "type": "SEGMENTED_COUNT",
         "label": "Race",
+        "full_label": "Race",
         "table": "B02",
         "total": "B02001e1",
         "segments": {
@@ -53,7 +59,8 @@ COLUMNS = {
     },
     "OCCUPANCY_STATUS": {
         "type": "SEGMENTED_COUNT",
-        "label": "Available properties",
+        "label": "Property availability",
+        "full_label": "Share of properties",
         "table": "B25",
         "total": "B25002e1",
         "segments": {
