@@ -99,8 +99,12 @@ for index, col in enumerate(columns):
             data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
     elif COLUMNS[metric]["type"] == "SEGMENTED_METRIC":
-        variant = st.radio(
-            "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
+        variant = col.radio(
+            "Select a variant",
+            list(COLUMNS[metric]["segments"].keys()),
+            index=0,
+            format_func=lambda x: x.title(),
+            horizontal=True,
         )
         data = get_simple_column(counties, metric, variant)
         cname = f"{metric}-{variant}"
@@ -114,11 +118,18 @@ for index, col in enumerate(columns):
         col1, col2 = col.columns(2)
         with col1:
             variant = st.selectbox(
-                "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
+                "Select a variant",
+                list(COLUMNS[metric]["segments"].keys()),
+                format_func=lambda x: x.title(),
+                index=0,
             )
         with col2:
             agg_type = st.radio(
-                "Measurement", ["TOTAL", "PERCENTAGE"], index=0, horizontal=True
+                "Measurement",
+                ["PERCENTAGE", "TOTAL"],
+                index=0,
+                format_func=lambda x: x.title(),
+                horizontal=True,
             )
         cname = f"{metric}-{variant}"
         data = get_simple_column(counties, metric, variant, agg_type)
