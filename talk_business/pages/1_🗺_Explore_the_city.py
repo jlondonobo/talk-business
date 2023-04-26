@@ -19,11 +19,25 @@ from utils.sql.us_census_2020 import (
     get_total_population,
 )
 
-st.markdown("# Provisional title")
-
-counties = st.multiselect(
-    "Choose the **counties** you want to explore", COUNTIES, COUNTIES[0]
+st.markdown(
+    """
+    <h1 style="text-align: center;"> Explore New York City </h1>
+    """,
+    unsafe_allow_html=True
 )
+
+with st.sidebar:    
+    counties = st.multiselect(
+        "Choose the **counties** you want to explore", COUNTIES, COUNTIES[0]
+    )
+
+    level = st.radio(
+        "Select an aggregation level",
+        ["TRACT", "BLOCK"],
+        format_func=lambda x: f"{x.title()}s",
+        horizontal=True,
+        help="Use **tracts** for easier exploration. Use **blocks** for more detail."
+    )
 
 summary_statistics = get_statistics(counties)
 
@@ -31,22 +45,22 @@ summary_statistics = get_statistics(counties)
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(
-        label="Total population 👪",
+        label="Total population",
         value=f"{summary_statistics.at[0, 'TOTAL_POP']:,.0f}",
     )
 with col2:
     st.metric(
-        label="Mean age 🎂",
+        label="Mean age",
         value=f"{summary_statistics.at[0, 'WEIGHTED_AVG_AGE']:.0f}",
     )
 with col3:
     st.metric(
-        label="Percentage female population 👩",
+        label="Percentage female population",
         value=f"{summary_statistics.at[0, 'FEMALE_PERCENT']:.1%}",
     )
 with col4:
     st.metric(
-        label="Mean per-capita income (12mo.) 💰",
+        label="Mean per-capita income (12mo.)",
         value=f"${summary_statistics.at[0, 'WEIGHTED_AVG_PER_CAPITA_INCOME']:,.0f}",
     )
 
@@ -55,9 +69,9 @@ area, centroid = get_bounding_box_points(counties)
 
 zoom = 12
 if area > 260_000_000:
-    zoom = 11
-if area > 1_000_000_000:
     zoom = 10
+if area > 1_000_000_000:
+    zoom = 11
 
 
 col1, col2 = st.columns(2)
@@ -66,13 +80,7 @@ with col1:
         "Select a metric", list(METRICS.keys()), format_func=METRICS.get
     )
 with col2:
-    level = st.radio(
-        "Select an aggregation level",
-        ["TRACT", "BLOCK"],
-        format_func=lambda x: f"{x.title()}s",
-        horizontal=True,
-        help="Use **tracts** for easier exploration. Use **blocks** for more detail."
-    )
+    
     id = "CENSUS_BLOCK_GROUP"
 # Get Data
 if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
