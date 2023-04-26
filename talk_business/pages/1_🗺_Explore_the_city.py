@@ -38,10 +38,12 @@ with st.sidebar:
         horizontal=True,
         help="Use **tracts** for easier exploration. Use **blocks** for more detail."
     )
+    
+    maps = st.radio("How many characteristics do you want to explore?", [1, 2, 3], index=1, horizontal=True)
 
 summary_statistics = get_statistics(counties)
 
-## plot map
+
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(
@@ -71,77 +73,73 @@ zoom = 12
 if area > 260_000_000:
     zoom = 10
 if area > 1_000_000_000:
-    zoom = 11
+    zoom = 9
 
 
-col1, col2 = st.columns(2)
-with col1:
-    metric = st.selectbox(
-        "Select a metric", list(METRICS.keys()), format_func=METRICS.get
-    )
-with col2:
-    
+columns = st.columns(maps)
+for index, col in enumerate(columns):
+    metric = col.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get, key=index)
     id = "CENSUS_BLOCK_GROUP"
-# Get Data
-if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
-    data = get_total_population(counties)
-    cname = metric
-    if level == "TRACT":
-        id = "TRACT_CODE"
-        data = dissolve_count(data, cname)
-        data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
-
-elif COLUMNS[metric]["type"] == "METRIC":
-    data = get_simple_column(counties, metric)
-    cname = metric
-    if level == "TRACT":
-        data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
-        id = "TRACT_CODE"
-        data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
-
-elif COLUMNS[metric]["type"] == "SEGMENTED_METRIC":
-    variant = st.radio(
-        "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
-    )
-    data = get_simple_column(counties, metric, variant)
-    cname = f"{metric}-{variant}"
-    if level == "TRACT":
-        data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
-        id = "TRACT_CODE"
-        data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
-
-
-elif COLUMNS[metric]["type"] == "SEGMENTED_COUNT":
-    col1, col2 = st.columns(2)
-    with col1:
-        variant = st.selectbox(
-            "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
-        )
-    with col2:
-        agg_type = st.radio(
-            "Measurement", ["TOTAL", "PERCENTAGE"], index=0, horizontal=True
-        )
-    cname = f"{metric}-{variant}"
-    data = get_simple_column(counties, metric, variant, agg_type)
-    if level == "TRACT":
-        if agg_type == "TOTAL":
+    # Get Data
+    if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
+        data = get_total_population(counties)
+        cname = metric
+        if level == "TRACT":
             id = "TRACT_CODE"
             data = dissolve_count(data, cname)
             data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
-        elif agg_type == "PERCENTAGE":
+
+    elif COLUMNS[metric]["type"] == "METRIC":
+        data = get_simple_column(counties, metric)
+        cname = metric
+        if level == "TRACT":
+            data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+            id = "TRACT_CODE"
+            data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
+
+    elif COLUMNS[metric]["type"] == "SEGMENTED_METRIC":
+        variant = st.radio(
+            "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
+        )
+        data = get_simple_column(counties, metric, variant)
+        cname = f"{metric}-{variant}"
+        if level == "TRACT":
             data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
             id = "TRACT_CODE"
             data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
 
-map = plot_blocks_choropleth(
-    data,
-    id,
-    cname,
-    center={"lat": centroid.y, "lon": centroid.x},
-    zoom=zoom,
-)
-st.plotly_chart(map, use_container_width=True)
+    elif COLUMNS[metric]["type"] == "SEGMENTED_COUNT":
+        col1, col2 = col.columns(2)
+        with col1:
+            variant = st.selectbox(
+                "Select a variant", list(COLUMNS[metric]["segments"].keys()), index=0
+            )
+        with col2:
+            agg_type = st.radio(
+                "Measurement", ["TOTAL", "PERCENTAGE"], index=0, horizontal=True
+            )
+        cname = f"{metric}-{variant}"
+        data = get_simple_column(counties, metric, variant, agg_type)
+        if level == "TRACT":
+            if agg_type == "TOTAL":
+                id = "TRACT_CODE"
+                data = dissolve_count(data, cname)
+                data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
+            elif agg_type == "PERCENTAGE":
+                data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+                id = "TRACT_CODE"
+                data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
-histogram = plot_distribution_by_area(data, cname)
-st.plotly_chart(histogram, use_container_width=True)
+
+    map = plot_blocks_choropleth(
+        data,
+        id,
+        cname,
+        center={"lat": centroid.y, "lon": centroid.x},
+        zoom=zoom,
+    )
+    col.plotly_chart(map, use_container_width=True)
+
+    histogram = plot_distribution_by_area(data, cname)
+    col.plotly_chart(histogram, use_container_width=True)
