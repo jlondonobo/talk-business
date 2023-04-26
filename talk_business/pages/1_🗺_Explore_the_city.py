@@ -1,3 +1,5 @@
+import json
+
 import streamlit as st
 from utils.columns import COLUMNS
 from utils.options import COUNTIES, METRICS
@@ -15,6 +17,7 @@ st.set_page_config(
 from utils.names import get_county_name, get_nta_name
 from utils.sql.us_census_2020 import (
     get_bounding_box_points,
+    get_nta_shapes,
     get_simple_column,
     get_statistics,
     get_total_population,
@@ -70,6 +73,8 @@ with col4:
 
 
 area, centroid = get_bounding_box_points(counties)
+nta_shapes = json.loads(get_nta_shapes(counties).to_json())
+
 
 zoom = 12
 if area > 260_000_000:
@@ -152,8 +157,9 @@ for index, col in enumerate(columns):
         center={"lat": centroid.y, "lon": centroid.x},
         zoom=zoom,
         uichange=True,
+        borders=nta_shapes
     )
-
+   
     tab1, tab2 = col.tabs(["Map", "Histogram"])
     tab1.plotly_chart(map, use_container_width=True)
     histogram = plot_distribution_by_area(data, cname)

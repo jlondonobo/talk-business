@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any
 
 import geopandas as gpd
 import plotly.express as px
@@ -10,10 +11,12 @@ from utils.columns import COLUMNS
 load_dotenv()
 LABELS = {col: meta["full_label"] for col, meta in COLUMNS.items()}
 
+
 def plot_blocks_choropleth(
     data: gpd.GeoDataFrame,
     id: str,
     value: str,
+    borders: dict[Any, Any],
     center: dict[str, float] = {"lat": 40.7128, "lon": -74.0060},
     zoom: int = 12,
     uichange: bool = False,
@@ -57,7 +60,17 @@ def plot_blocks_choropleth(
         margin=dict(l=0, r=0, t=0, b=0),
         showlegend=False,
         uirevision=uirevision,
+        mapbox_layers=[
+            dict(
+                sourcetype="geojson",
+                source=borders,
+                color="#303030",
+                type="line",
+                line=dict(width=10),
+            )
+        ],
     )
+
     fig.update_traces(marker_line_width=0.3, marker_line_color="white")
     fig.update_coloraxes(
         colorbar=dict(

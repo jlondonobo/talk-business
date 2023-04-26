@@ -159,3 +159,19 @@ COUNT_VARIABLES = """
     ) AND "B01001e1" > 10
     GROUP BY TRACT_CODE;
 """
+
+
+def get_nta_shapes(county_fips_collection: list[str]) -> gpd.GeoSeries:
+    """
+    Returns a GeoDataFrame containing the NTA polygons for the given counties.
+    """
+    query = """
+    SELECT GEOMETRY
+    FROM PERSONAL.PUBLIC.NTA_GEOGRAPHY
+    WHERE COUNTY_FIPS IN (%(county_fips_collection)s);
+    """
+    df = run_query(
+        query,
+        params={"county_fips_collection": encode_list(county_fips_collection)}
+    )
+    return gpd.GeoSeries.from_wkb(df["GEOMETRY"], crs="EPSG:4326")
