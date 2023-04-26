@@ -53,7 +53,7 @@ def plot_blocks_choropleth(
     uirevision = "Don't change" if uichange else None
     fig.update_layout(
         mapbox_style="light",
-        mapbox_accesstoken=os.getenv("MAPBOX_TOKEN"),
+        mapbox_accesstoken=os.environ["MAPBOX_TOKEN"],
         margin=dict(l=0, r=0, t=0, b=0),
         showlegend=False,
         uirevision=uirevision,
