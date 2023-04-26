@@ -12,7 +12,7 @@ from utils.transformers.geo import to_gdf
 
 
 def get_total_population(
-    county: list[str],
+    county_fips: list[str],
 ) -> gpd.GeoDataFrame:
     """Get the total population and population density for each county."""
 
@@ -32,16 +32,16 @@ def get_total_population(
     WHERE census_block_group IN (
         SELECT census_block_group
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
-        WHERE state = 'NY' AND county IN (%(county)s)
+        WHERE state = 'NY' AND COUNTY_FIPS IN (%(county_fips)s)
     ) AND total_population > 10;
     """
 
-    df = run_query(query, params={"county": encode_list(county)})
+    df = run_query(query, params={"county_fips": encode_list(county_fips)})
     return to_gdf(df)
 
 
 def get_simple_column(
-    county: list[str],
+    county_fips: list[str],
     column: str,
     variant: Union[str, None] = None,
     agg_type: Literal["TOTAL", "PERCENTAGE"] = "TOTAL",
@@ -85,14 +85,14 @@ def get_simple_column(
     WHERE census_block_group IN (
         SELECT census_block_group
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
-        WHERE state = 'NY' AND county IN (%(county)s)
+        WHERE state = 'NY' AND COUNTY_FIPS IN (%(county_fips)s)
     ) AND "{table}001e1" > 10;
     """
-    df = run_query(query, params={"county": encode_list(county)})
+    df = run_query(query, params={"county_fips": encode_list(county_fips)})
     return to_gdf(df)
 
 
-def get_statistics(county: list[str]) -> pd.DataFrame:
+def get_statistics(county_fips: list[str]) -> pd.DataFrame:
     """
     Returns four summary statistics for the selected counties.
 
@@ -113,26 +113,26 @@ def get_statistics(county: list[str]) -> pd.DataFrame:
     WHERE census_block_group IN (
         SELECT census_block_group
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
-        WHERE state = 'NY' AND county IN (%(county)s)
+        WHERE state = 'NY' AND COUNTY_FIPS IN (%(county_fips)s)
     );
     """
-    df = run_query(query, params={"county": encode_list(county)})
+    df = run_query(query, params={"county_fips": encode_list(county_fips)})
     return df
 
 
-def get_bounding_box_points(county: list[str]) -> tuple[float, Polygon]:
+def get_bounding_box_points(county_fips: list[str]) -> tuple[float, Polygon]:
     query = """
     WITH geoms AS (
         SELECT st_collect(to_geography(geometry)) as g
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
-        WHERE state = 'NY' AND county IN (%(county)s)
+        WHERE state = 'NY' AND COUNTY_FIPS IN (%(county_fips)s)
     )
 
     SELECT st_xmin(g) as xmin, st_xmax(g) as xmax, st_ymin(g) as ymin, st_ymax(g) as ymax
     FROM geoms;
     """
 
-    df = run_query(query, params={"county": encode_list(county)})
+    df = run_query(query, params={"county_fips": encode_list(county_fips)})
     xmin = df["XMIN"].values[0]
     xmax = df["XMAX"].values[0]
     ymin = df["YMIN"].values[0]

@@ -12,6 +12,7 @@ st.set_page_config(
 
 # Need to load this after setting page config
 # else the page will crash due to not being first function ran
+from utils.names import get_county_name, get_nta_name
 from utils.sql.us_census_2020 import (
     get_bounding_box_points,
     get_simple_column,
@@ -26,9 +27,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+DISPLAY_COUNTIES = ["005", "047", "061", "081", "085"]
 with st.sidebar:    
     counties = st.multiselect(
-        "Choose the **counties** you want to explore", COUNTIES, COUNTIES[0]
+        "Choose the **counties** you want to explore", DISPLAY_COUNTIES, DISPLAY_COUNTIES[0], format_func=get_county_name
     )
 
     level = st.radio(
