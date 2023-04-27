@@ -38,6 +38,9 @@ def plot_blocks_choropleth(
 
     geojson = json.loads(data.set_index(id)["geometry"].to_json())
 
+    zmin = data[value].quantile(0.05)
+    zmax = data[value].quantile(0.95)
+
     fig = px.choropleth_mapbox(
         data,
         geojson=geojson,
@@ -53,6 +56,7 @@ def plot_blocks_choropleth(
             value: True,
         },
         labels=LABELS,
+        range_color=[zmin, zmax],
     )
     if borders is not None:
         marker_line_width = 0
@@ -105,8 +109,6 @@ def plot_blocks_choropleth(
         uirevision=uirevision,
         mapbox_layers=mapbox_layers,
     )
-
-    
     fig.update_coloraxes(
         colorbar=dict(
             orientation="h",
