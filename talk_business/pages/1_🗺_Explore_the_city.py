@@ -23,7 +23,6 @@ from utils.sql.us_census_2020 import (
     get_simple_column,
     get_statistics,
     get_subway_stations,
-    get_total_population,
 )
 
 st.markdown(
@@ -99,15 +98,15 @@ for index, col in enumerate(columns):
     metric = col.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get, index=index, key=index)
 
     id = "CENSUS_BLOCK_GROUP"
-    if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
-        data = get_total_population(counties)
+    if COLUMNS[metric]["type"] == "COUNT_METRIC":
+        data = get_simple_column(counties, metric)
         cname = metric
         if level == "TRACT":
-            id = "TRACT_CODE"
             data = dissolve_count(data, cname)
+            id = "TRACT_CODE"
             data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
-    elif COLUMNS[metric]["type"] == "METRIC":
+    if COLUMNS[metric]["type"] == "METRIC":
         data = get_simple_column(counties, metric)
         cname = metric
         if level == "TRACT":

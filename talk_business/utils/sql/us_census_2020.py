@@ -11,35 +11,6 @@ from utils.sql.runner import run_query
 from utils.transformers.geo import to_gdf
 
 
-def get_total_population(
-    county_fips: list[str],
-) -> gpd.GeoDataFrame:
-    """Get the total population and population density for each county."""
-
-    query = """
-    SELECT
-        census_block_group,
-        TRACT_CODE,
-        NTA_NAME,
-        COUNTY_FIPS,
-        county,
-        "B01001e1" AS total_population,
-        "B01001e1" / (amount_land * 3.8610215854781257e-7) AS density_pop_sqmile,
-        geometry
-    FROM OPENCENSUSDATA.PUBLIC."2020_CBG_B01"
-    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c USING (census_block_group)
-    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS
-    WHERE census_block_group IN (
-        SELECT census_block_group
-        FROM OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT"
-        WHERE state = 'NY' AND COUNTY_FIPS IN (%(county_fips)s)
-    ) AND total_population > 10;
-    """
-
-    df = run_query(query, params={"county_fips": encode_list(county_fips)})
-    return to_gdf(df)
-
-
 def get_simple_column(
     county_fips: list[str],
     column: str,
@@ -49,7 +20,7 @@ def get_simple_column(
     meta = COLUMNS[column]
     table = meta["table"]
 
-    if meta["type"] == "METRIC":
+    if meta["type"] in ["METRIC", "COUNT_METRIC"]:
         column_selector = f"""
         "{meta["code"]}" as "{column}",
         "{meta["total"]}" as TOTAL

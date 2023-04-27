@@ -29,6 +29,7 @@ COLUMNS = {
         "full_label": "Total population",
         "table": "B01",
         "code": "B01003e1",
+        "total": "B01003e1",
     },
     "MEDIAN_AGE": {
         "type": "SEGMENTED_METRIC",
