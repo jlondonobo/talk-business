@@ -32,7 +32,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-DISPLAY_COUNTIES = ["005", "047", "061", "081", "085"]
+DISPLAY_COUNTIES = ["061", "081", "005", "047", "085"]
 with st.sidebar:    
     counties = st.multiselect(
         "Choose the **counties** you want to explore", DISPLAY_COUNTIES, DISPLAY_COUNTIES[0], format_func=get_county_name

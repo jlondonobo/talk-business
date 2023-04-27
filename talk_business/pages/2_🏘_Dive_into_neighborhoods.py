@@ -12,7 +12,7 @@ from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql import neighborhood_explorer as ne
 from utils.transformers import dissolve
 
-DISPLAY_COUNTIES = ["005", "047", "061", "081", "085"]
+DISPLAY_COUNTIES = ["061", "081", "005", "047", "085"]
 
 # Sidebar
 with st.sidebar:
