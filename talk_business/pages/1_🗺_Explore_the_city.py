@@ -22,6 +22,7 @@ from utils.sql.us_census_2020 import (
     get_nta_shapes,
     get_simple_column,
     get_statistics,
+    get_subway_stations,
     get_total_population,
 )
 
@@ -48,6 +49,9 @@ with st.sidebar:
     display_ntas = st.checkbox("Display neighborhoods", value=False, help="Will show neighborhood boundaries and their names on the map.")
 
     maps = st.radio("How many characteristics do you want to explore?", [1, 2, 3], index=1, horizontal=True)
+
+    st.markdown("Extended layers")
+    activate_subway_stations = st.checkbox("Subway stations", value=False)
 
 summary_statistics = get_statistics(counties)
 
@@ -95,7 +99,6 @@ for index, col in enumerate(columns):
     metric = col.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get, index=index, key=index)
 
     id = "CENSUS_BLOCK_GROUP"
-    # Get Data
     if metric in ["TOTAL_POPULATION", "DENSITY_POP_SQMILE"]:
         data = get_total_population(counties)
         cname = metric
@@ -159,7 +162,7 @@ for index, col in enumerate(columns):
   
     tab1, tab2 = col.tabs(["Map", "Histogram"])
     
-    centroids = load_nta_centroids(counties)
+    nta_labels = load_nta_centroids(counties)
     map = plot_blocks_choropleth(
         data,
         id,
@@ -168,8 +171,23 @@ for index, col in enumerate(columns):
         zoom=zoom,
         uichange=True,
         borders=nta_shapes,
-        nta_centroids=centroids,
+        nta_centroids=nta_labels,
     )
+    if activate_subway_stations:
+        stations = get_subway_stations(counties)
+        map.add_scattermapbox(
+            "above",
+            lat=stations["station_latitude"],
+            lon=stations["station_longitude"],
+            text=stations["station_name"],
+            name="Subway stations",
+            marker_color="#3B7B9C",
+            marker_size=8,
+            opacity=0.9,
+            hovertemplate='Station name: <b>%{text}</b><extra></extra>',
+            hoverlabel=dict(bgcolor="#2D3847"),
+        )
+
     tab1.plotly_chart(map, use_container_width=True)
     histogram = plot_distribution_by_area(data, cname)
     tab2.plotly_chart(histogram, use_container_width=True)
