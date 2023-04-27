@@ -175,3 +175,13 @@ def get_nta_shapes(county_fips_collection: list[str]) -> gpd.GeoSeries:
         params={"county_fips_collection": encode_list(county_fips_collection)}
     )
     return gpd.GeoSeries.from_wkt(df["GEOMETRY"], crs="EPSG:4326")
+
+
+def get_subway_stations(county_fips_collection: list[str]):
+    """Returns subway stations coordinates."""
+    query = """
+    SELECT *
+    FROM PERSONAL.PUBLIC.SUBWAY_STATIONS
+    WHERE "county_fips" IN (%(county_fips_collection)s);
+    """
+    return run_query(query, params={"county_fips_collection": encode_list(county_fips_collection)})
