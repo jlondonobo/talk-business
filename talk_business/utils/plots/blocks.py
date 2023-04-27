@@ -59,7 +59,19 @@ def plot_blocks_choropleth(
     else:
         marker_line_width = 0.3
 
-    fig.update_traces(marker_line_width=marker_line_width, marker_line_color="white")
+    fig.update_traces(
+        marker_line_width=marker_line_width,
+        marker_line_color="white",
+        hovertemplate=(
+            "<b>%{customdata[1]}</b><br>"
+            "<i>GeoID: %{location}</i><br>"
+            "<br>"
+            f"{LABELS[value]}<br>"
+            "<b>%{z}</b><br>"
+            "<extra></extra>"
+        ),
+        hoverlabel=dict(bgcolor="#2D3847"),
+    )
 
     uirevision = "Don't change" if uichange else None
     if borders is not None:
