@@ -181,9 +181,11 @@ for index, col in enumerate(columns):
             lon=stations["station_longitude"],
             text=stations["station_name"],
             name="Subway stations",
-            marker_color="black",
+            marker_color="#3B7B9C",
             marker_size=8,
-            opacity=0.5,
+            opacity=0.9,
+            hovertemplate='Station name: <b>%{text}</b><extra></extra>',
+            hoverlabel=dict(bgcolor="#2D3847"),
         )
 
     tab1.plotly_chart(map, use_container_width=True)
