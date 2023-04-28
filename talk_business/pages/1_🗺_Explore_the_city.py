@@ -20,6 +20,7 @@ from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql.us_census_2020 import (
     get_bounding_box_points,
     get_nta_shapes,
+    get_parks,
     get_simple_column,
     get_statistics,
     get_subway_stations,
@@ -33,7 +34,7 @@ st.markdown(
 )
 
 DISPLAY_COUNTIES = ["061", "081", "005", "047", "085"]
-with st.sidebar:    
+with st.sidebar:
     counties = st.multiselect(
         "Choose the **counties** you want to explore", DISPLAY_COUNTIES, DISPLAY_COUNTIES[0], format_func=get_county_name
     )
@@ -51,6 +52,7 @@ with st.sidebar:
 
     st.markdown("Extended layers")
     activate_subway_stations = st.checkbox("Subway stations", value=False)
+    activate_parks = st.checkbox("Parks", value=False)
 
 summary_statistics = get_statistics(counties)
 
@@ -162,6 +164,10 @@ for index, col in enumerate(columns):
     tab1, tab2 = col.tabs(["Map", "Histogram"])
     
     nta_labels = load_nta_centroids(counties)
+    parks = None
+    if activate_parks:
+        parks = get_parks(counties)    
+    
     map = plot_blocks_choropleth(
         data,
         id,
@@ -171,6 +177,7 @@ for index, col in enumerate(columns):
         uichange=True,
         borders=nta_shapes,
         nta_centroids=nta_labels,
+        parks=parks,
     )
     if activate_subway_stations:
         stations = get_subway_stations(counties)
@@ -186,6 +193,7 @@ for index, col in enumerate(columns):
             hovertemplate='Station name: <b>%{text}</b><extra></extra>',
             hoverlabel=dict(bgcolor="#2D3847"),
         )
+    
 
     tab1.plotly_chart(map, use_container_width=True)
     histogram = plot_distribution_by_area(data, cname)

@@ -156,3 +156,20 @@ def get_subway_stations(county_fips_collection: list[str]):
     WHERE "county_fips" IN (%(county_fips_collection)s);
     """
     return run_query(query, params={"county_fips_collection": encode_list(county_fips_collection)})
+
+
+def get_parks(county_fips_collection: list[str]) -> gpd.GeoDataFrame:
+    """
+    Returns park polygons for specific county.
+    """
+    query = """
+    SELECT *
+    FROM PERSONAL.PUBLIC.PUBLIC_PARKS
+    WHERE "COUNTY_FIPS" IN (%(county_fips_collection)s);
+    """
+    data = run_query(query, params={"county_fips_collection": encode_list(county_fips_collection)})
+    return (
+        data
+        .assign(geometry=lambda df: gpd.GeoSeries.from_wkt(df["geometry"], crs="EPSG:4326"))
+        .pipe(gpd.GeoDataFrame)
+    )
