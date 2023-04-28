@@ -39,8 +39,20 @@ def plot_blocks_choropleth(
 
     geojson = json.loads(data.set_index(id)["geometry"].to_json())
 
-    zmin = data[value].quantile(0.05)
-    zmax = data[value].quantile(0.95)
+    range_color = None
+    hovertemplate = "<b>%{customdata[1]}</b>"
+    if value is not None:
+        zmin = data[value].quantile(0.05)
+        zmax = data[value].quantile(0.95)
+        range_color = [zmin, zmax]
+        hovertemplate = (
+                "<b>%{customdata[1]}</b><br>"
+                "<i>GeoID: %{location}</i><br>"
+                "<br>"
+                f"{LABELS[value]}<br>"
+                "<b>%{z}</b><br>"
+                "<extra></extra>"
+            )
 
     fig = px.choropleth_mapbox(
         data,
@@ -57,7 +69,7 @@ def plot_blocks_choropleth(
             value: True,
         },
         labels=LABELS,
-        range_color=[zmin, zmax],
+        range_color=range_color,
     )
     if borders is not None:
         marker_line_width = 0
@@ -67,14 +79,7 @@ def plot_blocks_choropleth(
     fig.update_traces(
         marker_line_width=marker_line_width,
         marker_line_color="white",
-        hovertemplate=(
-            "<b>%{customdata[1]}</b><br>"
-            "<i>GeoID: %{location}</i><br>"
-            "<br>"
-            f"{LABELS[value]}<br>"
-            "<b>%{z}</b><br>"
-            "<extra></extra>"
-        ),
+        hovertemplate=hovertemplate,
         hoverlabel=dict(bgcolor="#2D3847"),
     )
 
