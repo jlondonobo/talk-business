@@ -22,6 +22,7 @@ def plot_blocks_choropleth(
     center: dict[str, float] = {"lat": 40.7128, "lon": -74.0060},
     zoom: int = 12,
     uichange: bool = False,
+    parks = None,
 ) -> go.Figure:
     """Plot blocks colored by 'value'.
 
@@ -78,6 +79,7 @@ def plot_blocks_choropleth(
     )
 
     uirevision = "Don't change" if uichange else None
+    mapbox_layers = []
     if borders is not None:
         fig.add_scattermapbox(
             "above",
@@ -88,18 +90,27 @@ def plot_blocks_choropleth(
             textfont=dict(size=7, color='#4A4A4A'),
         )
 
-        mapbox_layers = [
-            dict(
-                sourcetype="geojson",
-                source=borders,
-                color="grey",
-                type="line",
-                line=dict(width=0.5),
-                opacity=0.5,
-            )
-        ]
-    else:
-        mapbox_layers = None
+        borders_layer = dict(
+            sourcetype="geojson",
+            source=borders,
+            color="grey",
+            type="line",
+            line=dict(width=0.5),
+            opacity=0.5,
+        )
+        mapbox_layers.append(borders_layer)
+    
+    if parks is not None:
+        parks_json=json.loads(parks.to_json())
+        parks_layer = dict(
+            sourcetype="geojson",
+            source=parks_json,
+            color="#088C11",
+            type="fill",
+            line=dict(width=5),
+            opacity=0.3,
+        )
+        mapbox_layers.append(parks_layer)
 
     fig.update_layout(
         mapbox_style="light",
