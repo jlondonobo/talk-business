@@ -73,17 +73,46 @@ with col2:
     st.markdown("<p class='unit'>USD</p>", unsafe_allow_html=True)
 
 with col3:
+    avg_rent = statistic(nta_select, 'AVG_RENT')
     st.metric(
         label="Average gross monthly rent",
-        value=f"${statistic(nta_select, 'AVG_RENT'):,.0f}",
+        value=f"${avg_rent:,.0f}",
         help="Gross rent includes monthly rent and any services such as internet, energy, and water."
     )
     st.markdown("<p class='unit'>USD</p>", unsafe_allow_html=True)
 
 
+def potential_spending_tag(spending):
+    if spending > 1_999_999_999:
+        return "Top spending potential"
+
+
+def price_tag(rent_price: float):
+    if rent_price > 1_999:
+        return "Luxury neighborhood"
+    elif rent_price <= 1_000:
+        return "Affordable neighborhood"
+
+
+def compile_tags(tags: list) -> str:
+    return " ".join([f"<div class='tag'>{tag}</div>" for tag in tags])
+
+TAGS = []
+TAGS.append(potential_spending_tag(spending))
+TAGS.append(price_tag(avg_rent))
+TAGS = [tag for tag in TAGS if tag is not None]
+
 col1, col2 = st.columns(2)
 with col1:
     st.markdown("#### Neighborhood Persona")
+    st.markdown(
+        f"""
+        <div class="tag-list">
+            {compile_tags(TAGS)}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # Map
 with col2:
