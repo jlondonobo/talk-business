@@ -1,3 +1,25 @@
+.tag {
+background-color: #3CBC8D;
+border-radius: 0.25rem;
+display: inline-block;
+font-size: 13px;
+font-weight: 400;
+padding: 2px 8px;
+margin: 2px 0px;
+color: #FFF;
+box-sizing: border-box;
+text-align: center;
+cursor: pointer;
+}
+
+.tag-list {
+display: box;
+width: 200px;
+height: 300px;
+text-align: left;
+}
+
+
 h1 {
     text-align: center;
     padding: 5px;

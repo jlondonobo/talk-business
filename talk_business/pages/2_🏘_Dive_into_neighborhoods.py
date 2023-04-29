@@ -84,6 +84,17 @@ with col3:
 col1, col2 = st.columns(2)
 with col1:
     st.markdown("#### Neighborhood Persona")
+    st.markdown(
+        """
+        <div class="tag-list">
+            <div class="tag">Luxury Neighborhood</div>
+            <div class="tag">Old population</div>
+            <div class="tag">Mixed races</div>
+            <div class="tag">Lots of offices</div>  
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 # Map
 with col2:
