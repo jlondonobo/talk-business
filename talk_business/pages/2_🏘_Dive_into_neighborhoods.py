@@ -1,11 +1,15 @@
 import json
 
 import streamlit as st
+from utils.utils import load_css
 
 st.set_page_config(
     page_title="🌆 Neighborhood Explorer",
     layout="wide",
 )
+load_css("talk_business/assets/neighborhoods.css")
+
+
 from utils.flows import distributions
 from utils.names import get_county_name, get_nta_name
 from utils.plots.blocks import plot_blocks_choropleth
@@ -33,8 +37,8 @@ with st.sidebar:
 
 st.markdown(
     f"""
-    <h1> 🌆 Neighborhood Explorer </h1>
-    <h2> {get_nta_name(nta_select)} - {get_county_name(county_select)} County </h2>
+    <h1> Neighborhood Drilldown </h1>
+    <div class='subtitle'><h2>📍 {get_nta_name(nta_select)} 📍</h2><h3>{get_county_name(county_select)} County</h5></div>
     """,
     unsafe_allow_html=True,
 )
@@ -52,7 +56,7 @@ with col1:
         label="Population",
         value=f"{statistic(nta_select, 'POPULATION')/ 1000:,.0f}K",
     )
-    st.markdown("People")
+    st.markdown("<p class='unit'>People</p>", unsafe_allow_html=True)
 with col2:
     spending = statistic(nta_select, 'TOTAL_INCOME')
     if spending > 999_999_999:
@@ -66,7 +70,7 @@ with col2:
         label="Potential yearly spending",
         value=f"{value} {ammount}"
     )
-    st.markdown("USD")
+    st.markdown("<p class='unit'>USD</p>", unsafe_allow_html=True)
 
 with col3:
     st.metric(
@@ -74,12 +78,12 @@ with col3:
         value=f"${statistic(nta_select, 'AVG_RENT'):,.0f}",
         help="Gross rent includes monthly rent and any services such as internet, energy, and water."
     )
-    st.markdown("USD")
+    st.markdown("<p class='unit'>USD</p>", unsafe_allow_html=True)
 
 
 col1, col2 = st.columns(2)
 with col1:
-    st.markdown("### Neighborhood Persona")
+    st.markdown("#### Neighborhood Persona")
 
 # Map
 with col2:
@@ -121,7 +125,7 @@ with col2:
     st.plotly_chart(plot, use_container_width=True)
 
 
-st.markdown("## Neighborhood details")
+st.markdown("#### Neighborhood details")
 tab1, tab2, tab3 = st.tabs(["Demographic", "Economic", "Other"])
 
 with tab1:

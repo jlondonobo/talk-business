@@ -1,0 +1,61 @@
+h1 {
+    text-align: center;
+    padding: 5px;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 0px;
+}
+
+h3 {
+    font-size: 1rem;
+    margin-top: -30px;
+    font-style: italic;
+
+}
+
+
+
+.subtitle {
+    text-align: center;
+    /* font-style: italic; */
+}
+
+
+.mapboxgl-canvas {
+    border-radius: 0.25rem;
+}
+
+/* Border around metrics */
+[data-testid="stHorizontalBlock"]{
+    outline: 1px solid white;
+    padding: 20px 50px;
+    margin-top: 20px;
+    border-radius: 0.25rem;
+    text-align: center;
+}
+
+
+[data-testid="stHorizontalBlock"] ~ [data-testid="stHorizontalBlock"]{
+    outline: None;
+    padding: 0px;
+    margin-top: 20px;
+    border-radius: None;
+    text-align: left;
+}
+
+
+[data-testid="stMetricLabel"]{
+    display: flex;
+}
+
+/* Remove gap between metric and unit */
+[data-testid="stHorizontalBlock"] [data-testid="stVerticalBlock"]{
+    gap: 0px;
+}
+
+
+div[data-testid="stMetricValue"] > div {
+    font-weight: bold;
+}
