@@ -49,7 +49,7 @@ def query_nta_feature_distribution(feature_groups: dict[str, Any]) -> str:
             {format_feature_groups(feature_groups["columns"])}
         FROM OPENCENSUSDATA.PUBLIC."2020_CBG_{feature_groups["table"]}"
         LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" as c USING (census_block_group)
-        LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS
+        LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS AND nta.STATE_FIPS=c.STATE_FIPS
         WHERE STATE_FIPS = 36 AND c.COUNTY_FIPS IN ('005', '047', '061', '081', '085')
         GROUP BY (c.COUNTY_FIPS, COUNTY, NTA_CODE);
     """
