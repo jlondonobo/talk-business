@@ -54,16 +54,24 @@ with col1:
     )
     st.markdown("People")
 with col2:
+    spending = statistic(nta_select, 'TOTAL_INCOME')
+    if spending > 999_999_999:
+        value = f"${spending / 1_000_000_000:,.1f}"
+        ammount = "Billion"
+    else:
+        value = f"{spending / 1_000_000:,.0f}"  
+        ammount = "Million"
+
     st.metric(
         label="Potential yearly spending",
-        value=f"${statistic(nta_select, 'TOTAL_INCOME') / 1_000_000:,.0f}",
+        value=f"{value} {ammount}"
     )
-    st.markdown("Million dollars")
+    st.markdown("USD")
 
 with col3:
     st.metric(
         label="Average gross monthly rent",
-        value=f"{statistic(nta_select, 'AVG_RENT'):,.0f}",
+        value=f"${statistic(nta_select, 'AVG_RENT'):,.0f}",
         help="Gross rent includes monthly rent and any services such as internet, energy, and water."
     )
     st.markdown("USD")
