@@ -13,19 +13,28 @@ def load_mapper():
     )
 
 
+def transform_mapper(mapper: pd.DataFrame) -> pd.DataFrame:
+    return (
+        mapper
+        .assign(STATE_FIPS="36")
+        .rename(
+            {
+                "CountyFIPS": "COUNTY_FIPS",
+                "CT2020": "CENSUS_TRACT_2020",
+                "NTACode": "NTA_CODE",
+                "NTAName": "NTA_NAME",
+                "NTAAbbrev": "NTA_ABBREV",
+            },
+            axis="columns"
+        )
+    )
+
+
 def main():
     mapper = load_mapper()
-    uppercase_mapper = mapper.rename(
-        {
-            "CountyFIPS": "COUNTY_FIPS",
-            "CT2020": "CENSUS_TRACT_2020",
-            "NTACode": "NTA_CODE",
-            "NTAName": "NTA_NAME",
-            "NTAAbbrev": "NTA_ABBREV",
-        }, axis="columns"
-    )
+    mapper = transform_mapper(mapper)
     conn = init_connection(**st.secrets["snowflake"])
-    export_data_to_snowflake(conn, uppercase_mapper, "NTA_MAPPER")
+    export_data_to_snowflake(conn, mapper, "NTA_MAPPER")
 
 
 if __name__ == "__main__":

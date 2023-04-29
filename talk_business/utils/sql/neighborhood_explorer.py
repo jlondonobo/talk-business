@@ -49,7 +49,7 @@ def get_available_nta_list(county: str) -> pd.DataFrame:
     query = """
     SELECT NTA_CODE
     FROM PERSONAL.PUBLIC.NTA_MAPPER as nta
-    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS AND nta.STATE_FIPS=c.STATE_FIPS  
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B01" USING (census_block_group)
     WHERE c.COUNTY_FIPS = %(county)s
     GROUP BY (NTA_CODE, NTA_NAME)
@@ -81,7 +81,7 @@ def get_nta_shape(nta: str) -> gpd.GeoDataFrame:
 def fetch_neighborhood_statistics():
     """Return neighborhood statistics for all neighborhoods."""
     query = """
-    SELECT
+    SELECT 
         NTA_CODE,
         SUM("B01001e1") POPULATION, 
         SUM("B19313e1") AS TOTAL_INCOME,
@@ -90,7 +90,7 @@ def fetch_neighborhood_statistics():
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B19" USING(census_block_group)
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B25" USING(census_block_group)
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c USING(census_block_group)
-    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS
+    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS AND nta.STATE_FIPS=c.STATE_FIPS
     GROUP BY NTA_CODE;
     """
     data = runner.run_query(query)
