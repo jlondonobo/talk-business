@@ -81,19 +81,17 @@ def get_nta_shape(nta: str) -> gpd.GeoDataFrame:
 def fetch_neighborhood_statistics():
     """Return neighborhood statistics for all neighborhoods."""
     query = """
-    SELECT 
+    SELECT
         NTA_CODE,
-        SUM(amount_land) * 3.861e-7 as AREA,
         SUM("B01001e1") POPULATION, 
-        SUM("B01001e1") / SUM(amount_land * 3.861e-7) as POP_DENSITY,
-        SUM("B19313e1") AS TOTAL_INCOME
+        SUM("B19313e1") AS TOTAL_INCOME,
+        SUM("B25064e1" * "B25054e1") / SUM("B25054e1") AS AVG_RENT
     FROM OPENCENSUSDATA.PUBLIC."2020_CBG_B01" AS
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B19" USING(census_block_group)
-    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_METADATA_CBG_GEOGRAPHIC_DATA" USING(census_block_group)
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B25" USING(census_block_group)
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" AS c USING(census_block_group)
     LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER AS nta ON nta.CENSUS_TRACT_2020=c.tract_code AND nta.COUNTY_FIPS=c.COUNTY_FIPS
-    GROUP BY NTA_CODE
-    HAVING SUM(amount_land) > 0;
+    GROUP BY NTA_CODE;
     """
     data = runner.run_query(query)
     data = data.set_index("NTA_CODE")

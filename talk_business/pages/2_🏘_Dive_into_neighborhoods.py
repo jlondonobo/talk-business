@@ -46,7 +46,7 @@ def statistic(nta_code: str, statistic: str) -> float:
     return ne.neighborhood_stat(STATISTICS, nta_code, statistic)
 
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3 = st.columns(3)
 with col1:
     st.metric(
         label="Population",
@@ -55,24 +55,19 @@ with col1:
     st.markdown("People")
 with col2:
     st.metric(
-        label="Total income",
+        label="Potential yearly spending",
         value=f"${statistic(nta_select, 'TOTAL_INCOME') / 1_000_000:,.0f}",
     )
     st.markdown("Million dollars")
 
 with col3:
     st.metric(
-        label="Density",
-        value=f"{statistic(nta_select, 'POP_DENSITY') / 1000:,.0f}K",
+        label="Average gross monthly rent",
+        value=f"{statistic(nta_select, 'AVG_RENT'):,.0f}",
+        help="Gross rent includes monthly rent and any services such as internet, energy, and water."
     )
-    st.markdown("People / sq. mi.")
-with col4:
-    st.metric(
-        label="Area",
-        value=f"{statistic(nta_select, 'AREA'):.2f}",
-    )
-    st.markdown("sq. mi.")
-    
+    st.markdown("USD")
+
 
 col1, col2 = st.columns(2)
 with col1:
