@@ -121,8 +121,9 @@ for index, col in enumerate(columns):
             "Select a variant",
             list(COLUMNS[metric]["segments"].keys()),
             index=0,
-            format_func=lambda x: x.title(),
+            format_func=lambda x: x.replace("_", " ").title(),
             horizontal=True,
+            key=f"{metric}-variant-{index}",
         )
         data = get_simple_column(counties, metric, variant)
         cname = f"{metric}-{variant}"
@@ -138,8 +139,9 @@ for index, col in enumerate(columns):
             variant = st.selectbox(
                 "Select a variant",
                 list(COLUMNS[metric]["segments"].keys()),
-                format_func=lambda x: x.title(),
+                format_func=lambda x: x.replace("_", " ").title(),
                 index=0,
+                key=f"{metric}-variant-{index}",
             )
         with col2:
             agg_type = st.radio(
@@ -148,6 +150,7 @@ for index, col in enumerate(columns):
                 index=0,
                 format_func=lambda x: x.title(),
                 horizontal=True,
+                key=f"{metric}-agg_type-{index}",
             )
         cname = f"{metric}-{variant}"
         data = get_simple_column(counties, metric, variant, agg_type)
