@@ -11,6 +11,19 @@ from utils.columns import COLUMNS
 
 load_dotenv()
 LABELS = {col: meta["full_label"] for col, meta in COLUMNS.items()}
+ADD_LABELS = {
+    "MEDIAN_AGE-MALE": "Male Median Age",
+    "MEDIAN_AGE-FEMALE": "Female Median Age",
+    "RACE-WHITE": "White Population",
+    "RACE-BLACK_OR_AFRICAN_AMERICAN": "Black or African American Population",
+    "RACE-AMERICAN_INDIAN_AND_ALASKA_NATIVE": "Indian and Alaska Native Population",
+    "RACE-ASIAN": "Asian Population",
+    "RACE-NATIVE_HAWAIIAN_AND_OTHER_PACIFIC_ISLANDER_ALONE": "Hawaiian Population",
+    "RACE-SOME_OTHER_RACE": "Other race Population",
+    "RACE-TWO_OR_MORE_RACES": "Two or more races Population",
+    
+}
+LABELS.update(ADD_LABELS)
 
 
 def plot_blocks_choropleth(
