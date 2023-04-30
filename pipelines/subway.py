@@ -8,12 +8,20 @@ from thefuzz import process
 from utils.pandas_exporter import export_data_to_snowflake, init_connection, run_query
 
 LOCATIONS_URL = "https://data.ny.gov/api/views/i9wp-a4ja/rows.csv?accessType=DOWNLOAD&sorting=true"
-LOCATIONS_COLS = [
-    "Line",
-    "Station Name",
-    "Station Latitude",
-    "Station Longitude",
+ROUTES = [
+    'route1',
+    'route2',
+    'route3',
+    'route4',
+    'route5',
+    'route6',
+    'route7',
+    'route8',
+    'route9',
+    'route10',
+    'route11'
 ]
+
 
 RIDERSHIP_URL = "https://new.mta.info/document/91476"
 NUMBER_SUFFIXES = {1: "st", 2: "nd", 3: "rd"}
@@ -29,9 +37,14 @@ def clean_names(col: str) -> str:
     return col.lower().replace(" ", "_")
 
 
+def routes_to_list(stations: pd.DataFrame) -> pd.Series:
+    """Converts routes to list of routes."""
+    return stations[ROUTES].apply(lambda x: set([v for v in x if str(v) != "nan"]), axis=1)
+
+
 def load_subway_stations() -> pd.DataFrame:
     """Loads subway station entrances."""
-    return pd.read_csv(LOCATIONS_URL, usecols=LOCATIONS_COLS)
+    return pd.read_csv(LOCATIONS_URL)
 
 
 def load_nta_geoms(conn) -> gpd.GeoDataFrame:
@@ -49,8 +62,11 @@ def transform_subway_stations(data: pd.DataFrame) -> gpd.GeoDataFrame:
             subset=["station_name", "station_latitude", "station_longitude"]
         )
         .assign(
+            routes=lambda x: routes_to_list(x),
             geometry=lambda x: gpd.points_from_xy(x["station_longitude"], x["station_latitude"])
         )
+        .reset_index(drop=True)
+        .filter(["station_name", "routes", "geometry", "station_latitude", "station_longitude"])
         .pipe(gpd.GeoDataFrame, crs="EPSG:4326")
     )
 
@@ -75,7 +91,7 @@ def transform_ridership(ridership: pd.DataFrame) -> pd.DataFrame:
         .dropna(subset="Boro")
         .rename(columns={"Station (alphabetical by borough)": "station_name", 2019: "ridership"})
         .filter(["station_name", "ridership"])
-        .assign(station_name=lambda x: x["station_name"].apply(preprocess_station_name))
+        # .assign(station_name=lambda x: x["station_name"].apply(preprocess_station_name))
         .groupby("station_name")
         ["ridership"]
         .sum()
@@ -138,9 +154,7 @@ def main():
     conn = init_connection(**st.secrets["snowflake"])
 
     stations = load_subway_stations()
-    
     unique_stations = transform_subway_stations(stations)
-    unique_stations.query("station_name.duplicated(keep=False)").sort_values("station_name")
 
     ridership = load_ridership()
     t_ridership = transform_ridership(ridership)
@@ -163,3 +177,8 @@ if __name__ == "__main__":
 MANUAL_MATCHES = {
     "111st St": "111th St",
 }
+
+
+
+
+
