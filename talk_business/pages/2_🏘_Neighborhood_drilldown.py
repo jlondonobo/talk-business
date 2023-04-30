@@ -150,6 +150,7 @@ with col2:
                 line=dict(width=1),
             )
         ],
+        mapbox_style="mapbox://styles/jlondonobo/clh3uciej019a01pa6tas2286",
     )
     st.plotly_chart(plot, use_container_width=True)
 
