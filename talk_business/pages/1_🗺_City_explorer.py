@@ -190,10 +190,19 @@ for index, col in enumerate(columns):
             lon=stations["station_longitude"],
             text=stations["station_name"],
             name="Subway stations",
-            marker_color="#3B7B9C",
-            marker_size=8,
-            opacity=0.9,
-            hovertemplate='Station name: <b>%{text}</b><extra></extra>',
+            customdata=stations["ridership"].apply(lambda x: f"{x:,.0f}").replace("nan", "Statistic comming in the future..."),
+            marker=dict(
+                color="#3B7B9C",
+                size=stations["ridership"].where(stations["ridership"].notna(), 8),
+                sizemode="area",
+                sizemin=8,
+                sizeref=stations["ridership"].max() / 50 ** 2,
+            ),
+            opacity=0.8,
+            hovertemplate=(
+                'Station name: <b>%{text}</b><br>'
+                'Avg. weekday passengers: <b>%{customdata}</b><extra></extra>'
+            ),
             hoverlabel=dict(bgcolor="#2D3847"),
         )
     
