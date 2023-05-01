@@ -1,4 +1,3 @@
-import re
 from typing import Union
 
 import geopandas as gpd
@@ -7,29 +6,35 @@ import streamlit as st
 from thefuzz import process
 from utils.pandas_exporter import export_data_to_snowflake, init_connection, run_query
 
-LOCATIONS_URL = "https://data.ny.gov/api/views/i9wp-a4ja/rows.csv?accessType=DOWNLOAD&sorting=true"
-ROUTES = [
-    'route1',
-    'route2',
-    'route3',
-    'route4',
-    'route5',
-    'route6',
-    'route7',
-    'route8',
-    'route9',
-    'route10',
-    'route11'
-]
 
-
-RIDERSHIP_URL = "https://new.mta.info/document/91476"
-NUMBER_SUFFIXES = {1: "st", 2: "nd", 3: "rd"}
+def load_subway_stations() -> pd.DataFrame:
+    """Loads subway station entrances."""
+    data = pd.read_csv("https://data.cityofnewyork.us/api/views/kk4q-3rt2/rows.csv?accessType=DOWNLOAD")
+    data = data.assign(
+        geometry=lambda x: gpd.GeoSeries.from_wkt(x["the_geom"], crs="EPSG:4326"),
+        station_name=lambda x: x["NAME"].str.replace(r'(\d+)(st|nd|rd|th)', r"\1", regex=True),
+        lines=lambda x: x["LINE"].str.replace(r"-. Express", "", regex=True),
+    )
+    data = data.drop(columns=["the_geom"])
+    return (
+        gpd.GeoDataFrame(data)
+        .assign(
+             station_latitude=lambda x: x["geometry"].y,
+            station_longitude=lambda x: x["geometry"].x,
+        )
+    )
 
 
 def load_ridership():
     """Loads average weekday ridership by station."""
-    return pd.read_excel(RIDERSHIP_URL, sheet_name="Avg Weekday", skiprows=1)
+    data = pd.read_excel("https://new.mta.info/document/91476", sheet_name="Avg Weekday", skiprows=1)
+    return (
+        data
+        .dropna(subset="Boro")
+        .rename(columns={"Station (alphabetical by borough)": "station_name", 2019: "ridership"})
+        .filter(["station_name", "ridership"])
+        .assign(lines=lambda x: x["station_name"].str.extract(r"\((.+?)\)")[0].str.split(",").apply(lambda y: "-".join(sorted(y))))
+    )
 
 
 def clean_names(col: str) -> str:
@@ -37,66 +42,10 @@ def clean_names(col: str) -> str:
     return col.lower().replace(" ", "_")
 
 
-def routes_to_list(stations: pd.DataFrame) -> pd.Series:
-    """Converts routes to list of routes."""
-    return stations[ROUTES].apply(lambda x: set([v for v in x if str(v) != "nan"]), axis=1)
-
-
-def load_subway_stations() -> pd.DataFrame:
-    """Loads subway station entrances."""
-    return pd.read_csv(LOCATIONS_URL)
-
-
 def load_nta_geoms(conn) -> gpd.GeoDataFrame:
     """Loads NTA geometries."""
     query = "SELECT * FROM PERSONAL.PUBLIC.NTA_GEOGRAPHY"
     return run_query(conn, query)
-
-
-def transform_subway_stations(data: pd.DataFrame) -> gpd.GeoDataFrame:
-    """Get only one location per station."""
-    return (
-        data
-        .rename(columns=clean_names)
-        .drop_duplicates(
-            subset=["station_name", "station_latitude", "station_longitude"]
-        )
-        .assign(
-            routes=lambda x: routes_to_list(x),
-            geometry=lambda x: gpd.points_from_xy(x["station_longitude"], x["station_latitude"])
-        )
-        .reset_index(drop=True)
-        .filter(["station_name", "routes", "geometry", "station_latitude", "station_longitude"])
-        .pipe(gpd.GeoDataFrame, crs="EPSG:4326")
-    )
-
-
-def preprocess_station_name(name: str) -> str:
-    """Preprocess staiton names."""
-    clean_name = re.sub(r"\(.*\)", "", name).replace("St.", "St")
-
-    # st_num = re.findall(r"(\d+)", clean_name)
-    # if st_num:
-    #     for num in st_num:
-    #         last_num = int(num[-1])
-    #         suffix = NUMBER_SUFFIXES.get(last_num, "th")
-    #         clean_name = clean_name.replace(num, f"{num}{suffix}")
-    return clean_name
-
-
-def transform_ridership(ridership: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses ridership data."""
-    return (
-        ridership
-        .dropna(subset="Boro")
-        .rename(columns={"Station (alphabetical by borough)": "station_name", 2019: "ridership"})
-        .filter(["station_name", "ridership"])
-        # .assign(station_name=lambda x: x["station_name"].apply(preprocess_station_name))
-        .groupby("station_name")
-        ["ridership"]
-        .sum()
-        .reset_index()
-    )
 
 
 def transform_ntas(ntas: pd.DataFrame) -> gpd.GeoDataFrame:
@@ -133,52 +82,44 @@ def fuzzy_match_series_station_names(
     """
     Returns fuzzy match of original from canonical.
     """
-    return original.apply(lambda x: fuzzy_match(x, canonical, 90))
-
-
-def add_station_name_match(
-    ridership: pd.DataFrame,
-    station_names: pd.Series
-) -> pd.Series:
-    """Adds station match to ridership for merger with locations."""
-    station_names_simple = station_names.str.replace(r'(\d+)(st|nd|rd|th)', r"\1", regex=True)
-    return (
-        ridership
-        .assign(
-            station_name_match=lambda df: fuzzy_match_series_station_names(df["station_name"], station_names_simple)
-        )
-    )
+    return original.apply(lambda x: fuzzy_match(x, canonical, 80))
 
 
 def main():
     conn = init_connection(**st.secrets["snowflake"])
 
     stations = load_subway_stations()
-    unique_stations = transform_subway_stations(stations)
-
     ridership = load_ridership()
-    t_ridership = transform_ridership(ridership)
-    matched_ridership = add_station_name_match(t_ridership, unique_stations["station_name"])
-    matched_ridership.to_clipboard(index=False)
+    
+    canonical_ridership = (
+        ridership
+        .assign(
+            clean_name=lambda x: x["station_name"].str.replace(r"\(.*\)", "", regex=True).str.replace("St.", "St", regex=False),
+            station_match=lambda x: fuzzy_match_series_station_names(x["clean_name"], stations["station_name"]),
+        )
+        .filter(["station_match", "lines", "ridership"])
+    )
 
+    stations_with_ridership = (
+        stations
+        .merge(
+            canonical_ridership,
+            how="left",
+            left_on=["station_name", "lines"],
+            right_on=["station_match", "lines"],
+        )
+    )
 
     ntas = load_nta_geoms(conn)
     ntas = transform_ntas(ntas)
-    complete_stations = attach_nta_code(unique_stations, ntas)
-
+    complete_stations = attach_nta_code(stations_with_ridership, ntas)
+    complete_stations = (
+        complete_stations
+        .filter(["lines", "station_name", "station_latitude", "station_longitude", "county_fips", "nta_code", "ridership"])
+    )
     export_data_to_snowflake(conn, complete_stations, "SUBWAY_STATIONS")
 
 
 if __name__ == "__main__":
     main()
-
-
-
-MANUAL_MATCHES = {
-    "111st St": "111th St",
-}
-
-
-
-
 
