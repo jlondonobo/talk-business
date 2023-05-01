@@ -2,6 +2,7 @@ import streamlit as st
 from utils.utils import app_base_config, load_css
 
 app_base_config()
+load_css("talk_business/assets/hello.css")
 
 st.markdown(
     """
@@ -15,7 +16,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-load_css("talk_business/assets/hello.css")
 
 with st.expander("What is Talk Business?"):
     st.markdown(
@@ -49,12 +49,45 @@ with st.expander("What is Talk Business' offer?"):
         """
     )
 
-with st.expander("Where does Talk Business' data come from?"):
+with st.expander("Who are our data partners?"):
     st.markdown(
         """
-        - **Demographic and economic data**: Demographic and economic insights are based on the US 2020 Census
-        - **Neighbodhood divisions**: We use the latest Neighborhood Tabulation Areas (NTAs) from the NYC Department of City Planning.
-        - **Subway stations**: Provided by the Metropolitan Transportation Authority (MTA).
-        - **Parks**: We obtained parks and their shapes from the NYC Department of Parks and Recreation.
-        """
+        <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
+            <div class="card">
+                <a href="https://app.snowflake.com/marketplace/listing/GZSNZ2UNN0/safegraph-us-open-census-data-neighborhood-insights-free-dataset"><span class="link"></span></a>
+                <div class="logo-wrapper">
+                    <object class="logo" data="https://assets-global.website-files.com/5baafc2653bd67278f206724/6388bcfd03d0621161e4626d_SafeGraph%20Logo.svg" type="image/svg+xml"></object>
+                </div>
+                <div class="text">
+                    <p class="h3"> US Open Census Data </p>
+                    <p class="p"> SafeGraph </p>
+                    <p class="dataset-description"> 2020 US Census data with 7,500+ demographic attributes available at the Census Block Group level. </p>
+                </div>
+            </div>
+            <div class="card">
+                <a href="https://data.cityofnewyork.us/Transportation/Subway-Stations/arq3-7z49"><span class="link"></span></a>
+                <div class="logo-wrapper">
+                    <object class="logo" data="https://upload.wikimedia.org/wikipedia/commons/3/3c/MTA_NYC_logo.svg" type="image/svg+xml"></object>
+                </div>
+                <div class="text">
+                    <p class="h3"> NYC Subway Locations & Ridership </p>
+                    <p class="p"> MTA </p>
+                    <p class="dataset-description"> NYC's 473 Subway station locations & daily ridership. </p>
+                </div>
+            </div>
+            <div class="card">
+                <a href="https://www.nyc.gov/site/planning/data-maps/open-data/census-download-metadata.page"><span class="link"></span></a>
+                <div class="logo-wrapper">
+                    <object class="logo" data="https://svgshare.com/i/se9.svg" type="image/svg+xml"></object>
+                </div>
+                <div class="text">
+                    <p class="h3"> Neighborhood Tabulation Areas </p>
+                    <p class="p"> NYC Department of City Planning </p>
+                    <p class="dataset-description"> Geographic boundaries for NYC neighborhoods, and mappings to tract IDs. </p>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
+
