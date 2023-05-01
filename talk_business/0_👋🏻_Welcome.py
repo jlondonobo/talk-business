@@ -1,21 +1,21 @@
 import streamlit as st
-from utils.utils import app_base_config
+from utils.utils import app_base_config, load_css
 
 app_base_config()
 
 st.markdown(
     """
 
-    <div style="background-image: url('https://images.unsplash.com/photo-1496588152823-86ff7695e68f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bmV3JTIweW9yayUyMHNreWxpbmV8ZW58MHx8MHx8&w=1000&q=80'); border-radius: 10px; padding: 10px; background-size: 100%; background-position-y: 22%; margin: 30px auto;">
-    <h1 style="text-align: center; padding: 5px;">Talk Business</h1>
-    <h4 style="text-align: center; padding: 5px;"></h4>
-    <h4 style="text-align: center; padding-top: 5px; padding-bottom:20px;">🏨🏙🏦</h4>
-    <p style="text-align: center; padding-top: 5px; padding-bottom:20px;"><i>Understand New York City. Improve your reach through data.</i></p>
+    <div style="background-image: url('https://images.unsplash.com/photo-1496588152823-86ff7695e68f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bmV3JTIweW9yayUyMHNreWxpbmV8ZW58MHx8MHx8&w=1000&q=80'); border-radius: 10px; padding: 75px; background-size: 100%; background-position-y: 22%; margin: 30px auto;">
+        <div style=" justify-content: center;">
+            <h1 style="text-align: center; padding: 5px;">Talk Business</h1>
+            <p style="text-align: center;"><i>Grow your revenue in New York City. Improve your reach through data.</i></p>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
-
+load_css("talk_business/assets/hello.css")
 
 with st.expander("What is Talk Business?"):
     st.markdown(
