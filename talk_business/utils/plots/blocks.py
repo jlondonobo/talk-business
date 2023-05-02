@@ -59,12 +59,17 @@ def plot_blocks_choropleth(
         zmin = data[value].quantile(0.05)
         zmax = data[value].quantile(0.95)
         range_color = [zmin, zmax]
+
+        is_share = data[value].max() <= 1
+        value_format = ".1%" if is_share else ",.0f"
+        colorbar_format = ".0%" if is_share else ",.0f"
+
         hovertemplate = (
                 "<b>%{customdata[1]}</b><br>"
                 "<i>GeoID: %{location}</i><br>"
                 "<br>"
                 f"{LABELS[value]}<br>"
-                "<b>%{z}</b><br>"
+                f"<b>%{{z:{value_format}}}</b><br>"
                 "<extra></extra>"
             )
 
@@ -149,6 +154,7 @@ def plot_blocks_choropleth(
             len=0.4,
             x=0.93,
             xanchor="right",
+            tickformat=colorbar_format,
         )
     )
     return fig
