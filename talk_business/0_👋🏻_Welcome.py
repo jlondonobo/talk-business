@@ -49,6 +49,7 @@ with st.expander("What is Talk Business' offer?"):
         """
     )
 
+# Logo color: #a9a9a9
 with st.expander("What **data** powers Talk Business?"):
     st.markdown(
         """
@@ -56,7 +57,7 @@ with st.expander("What **data** powers Talk Business?"):
             <div class="card">
                 <a href="https://app.snowflake.com/marketplace/listing/GZSNZ2UNN0/safegraph-us-open-census-data-neighborhood-insights-free-dataset"><span class="link"></span></a>
                 <div class="logo-wrapper">
-                    <object class="logo" data="https://assets-global.website-files.com/5baafc2653bd67278f206724/6388bcfd03d0621161e4626d_SafeGraph%20Logo.svg" type="image/svg+xml"></object>
+                    <object class="logo" data="https://svgshare.com/i/sh6.svg" type="image/svg+xml"></object>
                 </div>
                 <div class="text">
                     <p class="h3"> US Open Census Data </p>
@@ -67,7 +68,7 @@ with st.expander("What **data** powers Talk Business?"):
             <div class="card">
                 <a href="https://app.snowflake.com/marketplace/listing/GZT0ZHT9NV1/foursquare-foursquare-places-new-york-city-sample"><span class="link"></span></a>
                 <div class="logo-wrapper">
-                    <object class="logo" data="https://svgshare.com/i/sgN.svg" type="image/svg+xml"></object>
+                    <object class="logo" data="https://svgshare.com/i/sh5.svg" type="image/svg+xml"></object>
                 </div>
                 <div class="text">
                     <p class="h3"> New York City Places </p>
@@ -78,7 +79,7 @@ with st.expander("What **data** powers Talk Business?"):
             <div class="card">
                 <a href="https://data.cityofnewyork.us/Transportation/Subway-Stations/arq3-7z49"><span class="link"></span></a>
                 <div class="logo-wrapper">
-                    <object class="logo" data="https://upload.wikimedia.org/wikipedia/commons/3/3c/MTA_NYC_logo.svg" type="image/svg+xml"></object>
+                    <object class="logo" data="https://svgshare.com/i/sjM.svg" type="image/svg+xml"></object>
                 </div>
                 <div class="text">
                     <p class="h3"> NYC Subway Locations & Ridership </p>
@@ -89,7 +90,7 @@ with st.expander("What **data** powers Talk Business?"):
             <div class="card">
                 <a href="https://www.nyc.gov/site/planning/data-maps/open-data/census-download-metadata.page"><span class="link"></span></a>
                 <div class="logo-wrapper">
-                    <object class="logo" data="https://svgshare.com/i/se9.svg" type="image/svg+xml"></object>
+                    <object class="logo" data="https://svgshare.com/i/siW.svg" type="image/svg+xml"></object>
                 </div>
                 <div class="text">
                     <p class="h3"> Neighborhood Tabulation Areas </p>
