@@ -55,10 +55,11 @@ with st.expander("What **data** powers Talk Business?"):
         """
         <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
             <div class="card">
-                <a href="https://app.snowflake.com/marketplace/listing/GZSNZ2UNN0/safegraph-us-open-census-data-neighborhood-insights-free-dataset"><span class="link"></span></a>
-                <div class="logo-wrapper">
-                    <object class="logo" data="https://svgshare.com/i/sh6.svg" type="image/svg+xml"></object>
-                </div>
+                <a href="https://app.snowflake.com/marketplace/listing/GZSNZ2UNN0/safegraph-us-open-census-data-neighborhood-insights-free-dataset">
+                    <div class="logo-wrapper">
+                        <object class="logo" data="https://svgshare.com/i/sh6.svg" type="image/svg+xml"></object>
+                    </div>
+                </a>
                 <div class="text">
                     <p class="h3"> US Open Census Data </p>
                     <p class="p"> SafeGraph<br>(Snowflake Marketplace)</p>
@@ -66,10 +67,11 @@ with st.expander("What **data** powers Talk Business?"):
                 </div>
             </div>
             <div class="card">
-                <a href="https://app.snowflake.com/marketplace/listing/GZT0ZHT9NV1/foursquare-foursquare-places-new-york-city-sample"><span class="link"></span></a>
-                <div class="logo-wrapper">
-                    <object class="logo" data="https://svgshare.com/i/sh5.svg" type="image/svg+xml"></object>
-                </div>
+                <a href="https://app.snowflake.com/marketplace/listing/GZT0ZHT9NV1/foursquare-foursquare-places-new-york-city-sample">
+                    <div class="logo-wrapper">
+                        <object class="logo" data="https://svgshare.com/i/sh5.svg" type="image/svg+xml"></object>
+                    </div>
+                </a>
                 <div class="text">
                     <p class="h3"> New York City Places </p>
                     <p class="p"> Foursquare<br>(Snowflake Marketplace)</p>
@@ -77,10 +79,11 @@ with st.expander("What **data** powers Talk Business?"):
                 </div>
             </div>
             <div class="card">
-                <a href="https://data.cityofnewyork.us/Transportation/Subway-Stations/arq3-7z49"><span class="link"></span></a>
-                <div class="logo-wrapper">
-                    <object class="logo" data="https://svgshare.com/i/sjM.svg" type="image/svg+xml"></object>
-                </div>
+                <a href="https://data.cityofnewyork.us/Transportation/Subway-Stations/arq3-7z49">
+                    <div class="logo-wrapper">
+                        <object class="logo" data="https://svgshare.com/i/sjM.svg" type="image/svg+xml"></object>
+                    </div>
+                </a>
                 <div class="text">
                     <p class="h3"> NYC Subway Locations & Ridership </p>
                     <p class="p"> MTA </p>
@@ -88,10 +91,11 @@ with st.expander("What **data** powers Talk Business?"):
                 </div>
             </div>
             <div class="card">
-                <a href="https://www.nyc.gov/site/planning/data-maps/open-data/census-download-metadata.page"><span class="link"></span></a>
-                <div class="logo-wrapper">
-                    <object class="logo" data="https://svgshare.com/i/siW.svg" type="image/svg+xml"></object>
-                </div>
+                <a href="https://www.nyc.gov/site/planning/data-maps/open-data/census-download-metadata.page">
+                    <div class="logo-wrapper">
+                        <object class="logo" data="https://svgshare.com/i/siW.svg" type="image/svg+xml"></object>
+                    </div>
+                </a>
                 <div class="text">
                     <p class="h3"> Neighborhood Tabulation Areas </p>
                     <p class="p"> NYC Department of City Planning </p>
