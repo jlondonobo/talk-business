@@ -21,7 +21,8 @@ ADD_LABELS = {
     "RACE-NATIVE_HAWAIIAN_AND_OTHER_PACIFIC_ISLANDER_ALONE": "Hawaiian Population",
     "RACE-SOME_OTHER_RACE": "Other race Population",
     "RACE-TWO_OR_MORE_RACES": "Two or more races Population",
-    
+    "COUNT": "Total Locations",
+    "PERCENTAGE": "Share of Locations",
 }
 LABELS.update(ADD_LABELS)
 
