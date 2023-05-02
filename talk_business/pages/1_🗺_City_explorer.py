@@ -43,6 +43,9 @@ with st.sidebar:
     counties = st.multiselect(
         "Choose the **counties** you want to explore", DISPLAY_COUNTIES, DISPLAY_COUNTIES[0], format_func=get_county_name
     )
+    if not counties:
+        st.warning("Please select at least one county.")
+        st.stop()
 
     level = st.radio(
         "Select an aggregation level",
