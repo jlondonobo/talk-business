@@ -5,7 +5,7 @@
 /* Start data card */
 .card {
   width: 260px;
-  height: 280px;
+  height: 300px;
   border-radius: 0.25rem;
   transition: 0.2s ease-in-out;
   margin: 1rem 1rem 2rem 1rem;
