@@ -173,3 +173,49 @@ def get_parks(county_fips_collection: list[str]) -> gpd.GeoDataFrame:
         .assign(geometry=lambda df: gpd.GeoSeries.from_wkt(df["geometry"], crs="EPSG:4326"))
         .pipe(gpd.GeoDataFrame)
     )
+
+
+def get_poi_count(
+    county_fips: list[str],
+    category: Union[str, None] = None,
+) -> gpd.GeoDataFrame:
+    query = """
+    WITH pois AS (
+        SELECT
+            COUNTY_FIPS,
+            TRACT_CODE,
+            CENSUS_BLOCK_GROUP,
+            CATEGORY,
+            COUNT(*) as count,
+            SUM(COUNT(*)) OVER(PARTITION BY COUNTY_FIPS, TRACT_CODE, CENSUS_BLOCK_GROUP) as total_count
+        FROM PERSONAL.PUBLIC.POIS_WITH_BLOCKS
+        GROUP BY (COUNTY_FIPS, TRACT_CODE, CENSUS_BLOCK_GROUP, CATEGORY)
+    )
+    SELECT
+        pois.COUNTY_FIPS,
+        pois.TRACT_CODE,
+        pois.CENSUS_BLOCK_GROUP,
+        CATEGORY,
+        NTA_CODE,
+        count,
+        total_count,
+        geometry
+    FROM pois
+    LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" USING (CENSUS_BLOCK_GROUP)
+    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER as nta ON pois.COUNTY_FIPS=nta.county_fips AND pois.TRACT_CODE=nta.census_tract_2020
+    WHERE CATEGORY=%(category)s AND pois.COUNTY_FIPS IN (%(county_fips)s);
+    """
+    params = {
+        "category": category,
+        "county_fips": encode_list(county_fips),
+    }
+
+    df = run_query(query, params=params)
+    return (
+        df
+        .rename(columns={"GEOMETRY": "geometry"})
+        .assign(
+            geometry=lambda df: gpd.GeoSeries.from_wkt(df["geometry"], crs="EPSG:4326"),
+        )
+        .pipe(gpd.GeoDataFrame)
+    )
