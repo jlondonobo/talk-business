@@ -5,7 +5,11 @@ from utils.columns import COLUMNS
 from utils.load_local_data import load_nta_centroids
 from utils.options import COUNTIES, METRICS
 from utils.plots.histograms import plot_distribution_by_area
-from utils.transformers.dissolve import dissolve_count, dissolve_weighted_average
+from utils.transformers.dissolve import (
+    dissolve_business_count,
+    dissolve_count,
+    dissolve_weighted_average,
+)
 
 st.set_page_config(
     page_title="The Big Apple",
@@ -21,6 +25,7 @@ from utils.sql.us_census_2020 import (
     get_bounding_box_points,
     get_nta_shapes,
     get_parks,
+    get_poi_count,
     get_simple_column,
     get_statistics,
     get_subway_stations,
@@ -100,7 +105,54 @@ for index, col in enumerate(columns):
     metric = col.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get, index=index, key=index)
 
     id = "CENSUS_BLOCK_GROUP"
-    if COLUMNS[metric]["type"] == "COUNT_METRIC":
+    if metric == "COMPANIES":
+        col1, col2 = col.columns(2)
+        with col1:
+            category = st.selectbox(
+                "Select a category",
+                [
+                    "Retail",
+                    "Dining and Drinking",
+                    "Business and Professional Services",
+                    "Sports and Recreation",
+                    "Health and Medicine",
+                    "Community and Government",
+                    "Arts and Entertainment",
+                    "Landmarks and Outdoors",
+                    "Travel and Transportation",
+                ],
+                index=0,
+                key=f"{metric}-variant-{index}",
+            )
+        with col2:
+            agg_type = st.radio(
+                "Measurement",
+                ["PERCENTAGE", "TOTAL"],
+                index=0,
+                format_func=lambda x: x.title(),
+                horizontal=True,
+                key=f"{metric}-agg_type-{index}",
+            )
+        data = (
+            get_poi_count(counties, category)
+            .assign(
+                COUNTY=lambda df: df["COUNTY_FIPS"].apply(get_county_name),
+                NTA_NAME=lambda df: df["NTA_CODE"].apply(get_nta_name),
+            )
+        )
+        cname = "COUNT" if agg_type == "TOTAL" else "PERCENTAGE"
+
+        if level == "TRACT":
+            if agg_type == "TOTAL":
+                id = "TRACT_CODE"
+                data = dissolve_business_count(data)
+                data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
+            elif agg_type == "PERCENTAGE":
+                data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+                id = "TRACT_CODE"
+                data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
+     
+    elif COLUMNS[metric]["type"] == "COUNT_METRIC":
         data = get_simple_column(counties, metric)
         cname = metric
         if level == "TRACT":
@@ -108,7 +160,7 @@ for index, col in enumerate(columns):
             id = "TRACT_CODE"
             data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
-    if COLUMNS[metric]["type"] == "METRIC":
+    elif COLUMNS[metric]["type"] == "METRIC":
         data = get_simple_column(counties, metric)
         cname = metric
         if level == "TRACT":
@@ -163,14 +215,14 @@ for index, col in enumerate(columns):
                 data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
                 id = "TRACT_CODE"
                 data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
-  
+
     tab1, tab2 = col.tabs(["Map", "Histogram"])
-    
+
     nta_labels = load_nta_centroids(counties)
     parks = None
     if activate_parks:
         parks = get_parks(counties)    
-    
+
     map = plot_blocks_choropleth(
         data,
         id,
@@ -205,7 +257,7 @@ for index, col in enumerate(columns):
             ),
             hoverlabel=dict(bgcolor="#2D3847"),
         )
-    
+
 
     tab1.plotly_chart(map, use_container_width=True)
     histogram = plot_distribution_by_area(data, cname)
