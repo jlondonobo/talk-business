@@ -20,8 +20,8 @@ st.markdown(
 with st.expander("What is Talk Business?"):
     st.markdown(
         """
-        - **Talk Business** is a tool designed to help you make decisions in New York City 🇺🇸.
-        - Open a new store, direct your marketing efforts, and understand your current public though an easy-to-use interface.
+        - **Talk Business** is a tool designed to help you make decisions in New York City 🗽🇺🇸
+        - Open a new store, direct your marketing efforts, and understand your current public though an easy-to-use interface
         """
     )
 
@@ -49,7 +49,7 @@ with st.expander("What is Talk Business' offer?"):
         """
     )
 
-with st.expander("Who are our data partners?"):
+with st.expander("What **data** powers Talk Business?"):
     st.markdown(
         """
         <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
@@ -60,8 +60,19 @@ with st.expander("Who are our data partners?"):
                 </div>
                 <div class="text">
                     <p class="h3"> US Open Census Data </p>
-                    <p class="p"> SafeGraph </p>
+                    <p class="p"> SafeGraph<br>(Snowflake Marketplace)</p>
                     <p class="dataset-description"> 2020 US Census data with 7,500+ demographic attributes available at the Census Block Group level. </p>
+                </div>
+            </div>
+            <div class="card">
+                <a href="https://app.snowflake.com/marketplace/listing/GZT0ZHT9NV1/foursquare-foursquare-places-new-york-city-sample"><span class="link"></span></a>
+                <div class="logo-wrapper">
+                    <object class="logo" data="https://svgshare.com/i/sgN.svg" type="image/svg+xml"></object>
+                </div>
+                <div class="text">
+                    <p class="h3"> New York City Places </p>
+                    <p class="p"> Foursquare<br>(Snowflake Marketplace)</p>
+                    <p class="dataset-description"> 300,000 places in New York City with their location and categories. This data is refreshed every day. </p>
                 </div>
             </div>
             <div class="card">
