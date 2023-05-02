@@ -187,7 +187,7 @@ def get_poi_count(
             CENSUS_BLOCK_GROUP,
             CATEGORY,
             COUNT(*) as count,
-            (COUNT(*) / SUM(COUNT(*)) OVER(PARTITION BY COUNTY_FIPS, TRACT_CODE, CENSUS_BLOCK_GROUP)) as percentage
+            SUM(COUNT(*)) OVER(PARTITION BY COUNTY_FIPS, TRACT_CODE, CENSUS_BLOCK_GROUP) as total_count
         FROM PERSONAL.PUBLIC.POIS_WITH_BLOCKS
         GROUP BY (COUNTY_FIPS, TRACT_CODE, CENSUS_BLOCK_GROUP, CATEGORY)
     )
@@ -198,7 +198,7 @@ def get_poi_count(
         CATEGORY,
         NTA_CODE,
         count,
-        percentage,
+        total_count,
         geometry
     FROM pois
     LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" USING (CENSUS_BLOCK_GROUP)
@@ -216,7 +216,6 @@ def get_poi_count(
         .rename(columns={"GEOMETRY": "geometry"})
         .assign(
             geometry=lambda df: gpd.GeoSeries.from_wkt(df["geometry"], crs="EPSG:4326"),
-            PERCENTAGE=lambda df: df["PERCENTAGE"].astype(float),
         )
         .pipe(gpd.GeoDataFrame)
     )

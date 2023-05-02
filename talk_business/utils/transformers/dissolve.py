@@ -22,15 +22,10 @@ def dissolve_business_count(
 ) -> gpd.GeoDataFrame:
     return (
         gdf
-        .filter(["COUNTY_FIPS", "COUNTY", "TRACT_CODE", "COUNT", "NTA_NAME", "geometry"])
+        .filter(["COUNTY_FIPS", "COUNTY", "TRACT_CODE", "TOTAL_COUNT", "COUNT", "NTA_NAME", "geometry"])
         .dissolve(by=["COUNTY_FIPS", "COUNTY", "NTA_NAME", "TRACT_CODE"], aggfunc="sum")
         .reset_index()
     )
-
-def dissolve_bussiness_percentage(
-    gdf: gpd.GeoDataFrame,
-) -> gpd.GeoDataFrame:
-
 
 
 def dissolve_weighted_average(

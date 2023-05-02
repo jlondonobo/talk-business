@@ -133,11 +133,14 @@ for index, col in enumerate(columns):
                 horizontal=True,
                 key=f"{metric}-agg_type-{index}",
             )
+        data = get_poi_count(counties, category)
         data = (
-            get_poi_count(counties, category)
+            data
             .assign(
                 COUNTY=lambda df: df["COUNTY_FIPS"].apply(get_county_name),
                 NTA_NAME=lambda df: df["NTA_CODE"].apply(get_nta_name),
+                TOTAL_COUNT=lambda df: df["TOTAL_COUNT"].astype(int).fillna(0),
+                PERCENTAGE=lambda df: df["COUNT"] / df["TOTAL_COUNT"],
             )
         )
         cname = "COUNT" if agg_type == "TOTAL" else "PERCENTAGE"
@@ -148,10 +151,11 @@ for index, col in enumerate(columns):
                 data = dissolve_business_count(data)
                 data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
             elif agg_type == "PERCENTAGE":
-                data = dissolve_weighted_average(data, "TRACT_CODE", cname, "TOTAL")
+                data = dissolve_business_count(data)
+                data = data.assign(PERCENTAGE=lambda df: df["COUNT"] / df["TOTAL_COUNT"])
                 id = "TRACT_CODE"
                 data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
-     
+
     elif COLUMNS[metric]["type"] == "COUNT_METRIC":
         data = get_simple_column(counties, metric)
         cname = metric
