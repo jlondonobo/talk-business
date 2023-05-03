@@ -57,6 +57,7 @@ def plot_blocks_choropleth(
 
     range_color = None
     hovertemplate = "<b>%{customdata[1]}</b>"
+    colorbar_format = ""
     if value is not None:
         zmin = data[value].quantile(0.05)
         zmax = data[value].quantile(0.95)

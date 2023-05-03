@@ -15,6 +15,7 @@ from utils.names import get_county_name, get_nta_name
 from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql import neighborhood_explorer as ne
 from utils.transformers import dissolve
+from utils.plots.neighborhood import treemap
 
 DISPLAY_COUNTIES = ["061", "081", "005", "047", "085"]
 
@@ -207,6 +208,13 @@ with tab2:
         compare_county,
     )
     st.plotly_chart(occupation_plot, use_container_width=True)
+
+    # Places
+    treemap_data = ne.get_neighborhood_treemap_data(nta_select)
+    treemap_data = treemap_data.fillna("Other")
+
+    treemap_plot = treemap(treemap_data, get_nta_name(nta_select))
+    st.plotly_chart(treemap_plot, use_container_width=True)
 
 
 with tab3:
