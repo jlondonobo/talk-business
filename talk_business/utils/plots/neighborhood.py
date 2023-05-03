@@ -157,16 +157,17 @@ def compare_distributions(
     return fig
 
 
-def plot_places_treemap(data: pd.DataFrame, nta: str) -> go.Figure:
+def treemap(data: pd.DataFrame, nta: str) -> go.Figure:
     """Return a treemap of the places in a neighborhood."""
     fig = px.treemap(
         data,
-        path=[px.Constant(f"Places in {nta}"), "category", "sub_category"],
-        labels={"category": "Category", "sub_category": "Sub-category"}
+        path=[px.Constant(f"Places in {nta}"), "CATEGORY", "SUB_CATEGORY"],
+        values="PLACES_COUNT",
+        labels={"CATEGORY": "Category", "SUB_CATEGORY": "Sub-category", "PLACES_COUNT": "Number of places"},
     )
     fig.update_layout(
         margin=dict(t=40, l=0, r=0, b=0),
-        title_text=f"What types of <b>places</b> are ther in <b>{nta}</b>?",
+        title_text=f"Places distribution in <b>{nta}</b>",
         title_x=0,
     )
     return fig
