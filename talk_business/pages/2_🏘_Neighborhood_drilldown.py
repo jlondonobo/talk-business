@@ -2,6 +2,7 @@ import json
 
 import streamlit as st
 from utils.utils import load_css
+import pandas as pd
 
 st.set_page_config(
     page_title="🌆 Neighborhood Explorer",
@@ -16,6 +17,7 @@ from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql import neighborhood_explorer as ne
 from utils.transformers import dissolve
 from utils.plots.neighborhood import treemap
+from utils.transformers import neighborhood as ntransform
 
 DISPLAY_COUNTIES = ["061", "081", "005", "047", "085"]
 
@@ -95,12 +97,41 @@ def price_tag(rent_price: float):
         return "Affordable neighborhood"
 
 
+def race_tag(race_data: pd.DataFrame):
+    if race_data["pop_share"].max() > 0.6:
+        max_group = race_data["pop_share"].idxmax()
+
+        if max_group == "👩🏼👨🏻 White":
+            return "Mostly white population"
+        elif max_group == "👨🏾👩🏾 Black or African American":
+            return "Mostly african-american population"
+        elif max_group == "👲🏻 Asian":
+            return "Mostly asian population"
+
+
+def subway_tag(subway_count: int):
+    if subway_count > 3:
+        return "High subway access"
+    elif subway_count == 0:
+        return "No subway access"
+    else:
+        return "Subway access"
+
+
 def compile_tags(tags: list) -> str:
     return " ".join([f"<div class='tag'>{tag}</div>" for tag in tags])
+
+# Machete
+race = ne.get_distribution("RACE_GROUPS", nta_select)
+race = ntransform.transform_race(race).set_index("RACE_GROUPS")
+suway_count = ne.get_nta_subway_station_count(nta_select)
+
 
 TAGS = []
 TAGS.append(potential_spending_tag(spending))
 TAGS.append(price_tag(avg_rent))
+TAGS.append(race_tag(race))
+TAGS.append(subway_tag(suway_count))
 TAGS = [tag for tag in TAGS if tag is not None]
 
 col1, col2 = st.columns(2)
