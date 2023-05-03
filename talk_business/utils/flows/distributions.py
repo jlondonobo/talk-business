@@ -49,7 +49,7 @@ def plot_family_income_dist(
         nta_name = get_nta_name(nta_code)
         county_name = get_county_name(county_fips) + " County"
         title = (
-            f"<b>How much do families in {nta_name} earn each year?<br>"
+            f"<b>How much do families in {nta_name} make each year?<br>"
             f"<sup>{nta_name} vs {county_name}"
         )
         return nplot.compare_distributions(
@@ -136,12 +136,16 @@ def plot_occupation_dist(
         nta_name = get_nta_name(nta_code)
         county_name = get_county_name(county_fips) + " County"
         title = (
-            f"<b>What jobs do people from {nta_name} work?<br>"
+            f"<b>What are the jobs of people from {nta_name}?<br>"
             f"<sup>{nta_name} vs {county_name}"
         )
-        return nplot.compare_distributions(
+        fig = nplot.compare_distributions(
             occupation, county, TABLE, share, title, nta_name, county_name
         )
+        fig.update_layout(height=600)
+        fig.update_xaxes(categoryorder="total descending")
+        return fig
+    
     return nplot.distribution(
         occupation,
         TABLE,
