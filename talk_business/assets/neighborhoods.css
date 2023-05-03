@@ -37,7 +37,6 @@ h3 {
 }
 
 
-
 .subtitle {
     text-align: center;
     /* font-style: italic; */
@@ -79,4 +78,10 @@ h3 {
 
 div[data-testid="stMetricValue"] > div {
     font-weight: bold;
+    margin-top: 7px;
 }
+
+.unit {
+    margin-top: -10px;
+}
+

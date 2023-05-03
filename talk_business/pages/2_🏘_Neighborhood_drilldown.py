@@ -105,7 +105,7 @@ TAGS = [tag for tag in TAGS if tag is not None]
 
 col1, col2 = st.columns(2)
 with col1:
-    st.markdown("#### Neighborhood Persona")
+    st.markdown("#### Neighborhood personality")
     st.markdown(
         f"""
         <div class="tag-list">
@@ -157,7 +157,7 @@ with col2:
 
 
 st.markdown("#### Neighborhood details")
-tab1, tab2, tab3 = st.tabs(["Demographic", "Economic", "Other"])
+tab1, tab2, tab3 = st.tabs(["Demographic", "Economic", "Places"])
 
 with tab1:
     # Age
@@ -209,6 +209,9 @@ with tab2:
     )
     st.plotly_chart(occupation_plot, use_container_width=True)
 
+
+with tab3:
+    # Todo: People per home
     # Places
     treemap_data = ne.get_neighborhood_treemap_data(nta_select)
     treemap_data = treemap_data.fillna("Other")
@@ -216,15 +219,11 @@ with tab2:
     treemap_plot = treemap(treemap_data, get_nta_name(nta_select))
     st.plotly_chart(treemap_plot, use_container_width=True)
 
-
-with tab3:
-    # Todo: People per home
-
-    # Enrollment
-    enrollemnt_plot = distributions.plot_enrollment_dist(
-        county_select,
-        nta_select,
-        share,
-        compare_county,
-    )
-    st.plotly_chart(enrollemnt_plot, use_container_width=True)
+    # # Enrollment
+    # enrollemnt_plot = distributions.plot_enrollment_dist(
+    #     county_select,
+    #     nta_select,
+    #     share,
+    #     compare_county,
+    # )
+    # st.plotly_chart(enrollemnt_plot, use_container_width=True)
