@@ -117,3 +117,14 @@ def neighborhood_stat(
     """Return neighborhood statistics for a single neighborhood."""
     return data.at[nta_code, stat]
 
+
+def get_neighborhood_treemap_data(nta: str) -> pd.DataFrame:
+    """Return data to plot neighborhood treemap."""
+    query = """
+    SELECT CATEGORY, SUB_CATEGORY, COUNT(*) as PLACES_COUNT
+    FROM PERSONAL.PUBLIC.POIS_WITH_BLOCKS as pois
+    LEFT JOIN PERSONAL.PUBLIC.NTA_MAPPER as nta ON nta.county_fips=pois.county_fips AND nta.census_tract_2020=pois.tract_code
+    WHERE NTA_CODE = %(nta)s
+    GROUP BY(CATEGORY, SUB_CATEGORY);
+    """
+    return runner.run_query(query, params={"nta": nta})
