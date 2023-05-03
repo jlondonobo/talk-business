@@ -155,3 +155,18 @@ def compare_distributions(
     fig.update_yaxes(title_text=comp_data[values].name, tickformat=value_format)
     fig.update_layout(hovermode="x")
     return fig
+
+
+def plot_places_treemap(data: pd.DataFrame, nta: str) -> go.Figure:
+    """Return a treemap of the places in a neighborhood."""
+    fig = px.treemap(
+        data,
+        path=[px.Constant(f"Places in {nta}"), "category", "sub_category"],
+        labels={"category": "Category", "sub_category": "Sub-category"}
+    )
+    fig.update_layout(
+        margin=dict(t=40, l=0, r=0, b=0),
+        title_text=f"What types of <b>places</b> are ther in <b>{nta}</b>?",
+        title_x=0,
+    )
+    return fig
