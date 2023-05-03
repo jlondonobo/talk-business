@@ -15,6 +15,7 @@ LABELS = {
     "age_category": "Age group",
     "income_groups": "Family income",
     "pop_share": "Share of population",
+    "AGE_CATEGORY": "Age group",
 }
 
 
