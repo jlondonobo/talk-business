@@ -15,6 +15,7 @@ LABELS = {
     "age_category": "Age group",
     "income_groups": "Family income",
     "pop_share": "Share of population",
+    "AGE_CATEGORY": "Age group",
 }
 
 
@@ -125,7 +126,8 @@ def compare_distributions(
     """Plot a value from `main` in comparison to `comps`."""
     values = "pop_share" if share else "population"
     value_format = ".1%" if share else ",.0f"
-
+    
+    
     fig = go.Figure(data=[
         go.Bar(
             x=comp_data[labels],
@@ -151,8 +153,8 @@ def compare_distributions(
         legend_traceorder="reversed",
         xaxis_type="category",
     )
-    fig.update_xaxes(title_text=comp_data[labels].name, type="category")
-    fig.update_yaxes(title_text=comp_data[values].name, tickformat=value_format)
+    fig.update_xaxes(title_text=LABELS[comp_data[labels].name], type="category")
+    fig.update_yaxes(title_text=LABELS[comp_data[values].name], tickformat=value_format)
     fig.update_layout(hovermode="x")
     return fig
 
