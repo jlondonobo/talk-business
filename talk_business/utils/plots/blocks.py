@@ -21,6 +21,8 @@ ADD_LABELS = {
     "RACE-NATIVE_HAWAIIAN_AND_OTHER_PACIFIC_ISLANDER_ALONE": "Hawaiian Population",
     "RACE-SOME_OTHER_RACE": "Other race Population",
     "RACE-TWO_OR_MORE_RACES": "Two or more races Population",
+    "OCCUPANCY_STATUS-OCCUPIED": "Occupied Housing Units",
+    "OCCUPANCY_STATUS-VACANT": "Vacant Housing Units",
     "COUNT": "Total Locations",
     "PERCENTAGE": "Share of Locations",
 }
@@ -59,12 +61,17 @@ def plot_blocks_choropleth(
         zmin = data[value].quantile(0.05)
         zmax = data[value].quantile(0.95)
         range_color = [zmin, zmax]
+
+        is_share = data[value].max() <= 1
+        value_format = ".1%" if is_share else ",.0f"
+        colorbar_format = ".0%" if is_share else ",.0f"
+
         hovertemplate = (
                 "<b>%{customdata[1]}</b><br>"
                 "<i>GeoID: %{location}</i><br>"
                 "<br>"
                 f"{LABELS[value]}<br>"
-                "<b>%{z}</b><br>"
+                f"<b>%{{z:{value_format}}}</b><br>"
                 "<extra></extra>"
             )
 
@@ -100,22 +107,23 @@ def plot_blocks_choropleth(
     uirevision = "Don't change" if uichange else None
     mapbox_layers = []
     if borders is not None:
-        fig.add_scattermapbox(
-            "above",
-            lat=nta_centroids["LAT"],
-            lon=nta_centroids["LON"],
-            text=nta_centroids["NTA_NAME"],
-            mode='text',
-            textfont=dict(size=7, color='#4A4A4A'),
-        )
+        # fig.add_scattermapbox(
+        #     "above",
+        #     lat=nta_centroids["LAT"],
+        #     lon=nta_centroids["LON"],
+        #     text=nta_centroids["NTA_NAME"],
+        #     mode='text',
+        #     textfont=dict(size=10, color='#0E1117'),
+        #     hoverinfo='skip',
+        # )
 
         borders_layer = dict(
             sourcetype="geojson",
             source=borders,
-            color="grey",
+            color="#0E1117",
             type="line",
-            line=dict(width=0.5),
-            opacity=0.5,
+            line=dict(width=1),
+            opacity=1,
         )
         mapbox_layers.append(borders_layer)
     
@@ -149,6 +157,7 @@ def plot_blocks_choropleth(
             len=0.4,
             x=0.93,
             xanchor="right",
+            tickformat=colorbar_format,
         )
     )
     return fig

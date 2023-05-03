@@ -43,6 +43,9 @@ with st.sidebar:
     counties = st.multiselect(
         "Choose the **counties** you want to explore", DISPLAY_COUNTIES, DISPLAY_COUNTIES[0], format_func=get_county_name
     )
+    if not counties:
+        st.warning("Please select at least one county.")
+        st.stop()
 
     level = st.radio(
         "Select an aggregation level",
@@ -51,7 +54,7 @@ with st.sidebar:
         horizontal=True,
         help="Use **tracts** for easier exploration. Use **blocks** for more detail."
     )
-    display_ntas = st.checkbox("Display neighborhood boundaries", value=False, help="Will show neighborhood boundaries and their names on the map.")
+    display_ntas = st.checkbox("Display neighborhood boundaries", value=False, help="Neighborhood names will show on hover.")
 
     maps = st.radio("How many characteristics do you want to explore?", [1, 2, 3], index=1, horizontal=True)
 
