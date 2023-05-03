@@ -54,7 +54,7 @@ with st.sidebar:
         horizontal=True,
         help="Use **tracts** for easier exploration. Use **blocks** for more detail."
     )
-    display_ntas = st.checkbox("Display neighborhood boundaries", value=False, help="Will show neighborhood boundaries and their names on the map.")
+    display_ntas = st.checkbox("Display neighborhood boundaries", value=False, help="Neighborhood names will show on hover.")
 
     maps = st.radio("How many characteristics do you want to explore?", [1, 2, 3], index=1, horizontal=True)
 
