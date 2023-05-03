@@ -128,3 +128,13 @@ def get_neighborhood_treemap_data(nta: str) -> pd.DataFrame:
     GROUP BY(CATEGORY, SUB_CATEGORY);
     """
     return runner.run_query(query, params={"nta": nta})
+
+
+def get_nta_subway_station_count(nta: str) -> int:
+    query = """
+    SELECT COUNT(*) as subway_count
+    FROM PERSONAL.PUBLIC.SUBWAY_STATIONS
+    WHERE "nta_code" =  %(nta)s
+    """
+    df = runner.run_query(query, params={"nta": nta})
+    return df.at[0, "SUBWAY_COUNT"]
