@@ -10,11 +10,13 @@ from utils.transformers.dissolve import (
     dissolve_count,
     dissolve_weighted_average,
 )
+from utils.utils import load_css
 
 st.set_page_config(
     page_title="The Big Apple",
     layout="wide",
 )
+load_css("talk_business/assets/explorer.css")
 
 # Need to load this after setting page config
 # else the page will crash due to not being first function ran
@@ -73,26 +75,26 @@ with col1:
     st.metric(
         label="Total population",
         value=f"{get_stat(counties, 'TOTAL_POPULATION'):,.0f}",
-        help="Number of people in the selected counties.",
     )
+    st.markdown("<p class='unit'>People</p>", unsafe_allow_html=True)
 with col2:
     st.metric(
         label="Total households",
         value=f"{get_stat(counties, 'TOTAL_HOUSEHOLDS'):,.0f}",
-        help="Number of households in the selected counties.",
     )
+    st.markdown("<p class='unit'>Households</p>", unsafe_allow_html=True)
 with col3:
     st.metric(
-        label="Total income",
+        label="Total yearly income",
         value=f"${get_stat(counties, 'TOTAL_INCOME') / 1_000_000_000:,.0f} Billion",
-        help="Yearly income of all people in the selected counties."
     )
+    st.markdown("<p class='unit'>USD</p>", unsafe_allow_html=True)
 with col4:
     st.metric(
         label="Total places",
         value=f"{get_stat(counties, 'TOTAL_PLACES'):,.0f}",
-        help="Number of collected places in the selected counties."
     )
+    st.markdown("<p class='unit'>Places</p>", unsafe_allow_html=True)
 
 
 area, centroid = get_bounding_box_points(counties)

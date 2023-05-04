@@ -1,0 +1,38 @@
+
+/* Border around metrics */
+[data-testid="stHorizontalBlock"]{
+    outline: 1px solid white;
+    padding: 20px 50px;
+    margin-top: 20px;
+    border-radius: 0.25rem;
+    text-align: center;
+}
+
+
+[data-testid="stHorizontalBlock"] ~ [data-testid="stHorizontalBlock"]{
+    outline: None;
+    padding: 0px;
+    margin-top: 20px;
+    border-radius: None;
+    text-align: left;
+}
+
+
+[data-testid="stMetricLabel"]{
+    display: flex;
+}
+
+/* Remove gap between metric and unit */
+[data-testid="stHorizontalBlock"] [data-testid="stVerticalBlock"]{
+    gap: 0px;
+}
+
+
+div[data-testid="stMetricValue"] > div {
+    font-weight: bold;
+    margin-top: 7px;
+}
+
+.unit {
+    margin-top: -10px;
+}
