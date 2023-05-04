@@ -29,9 +29,9 @@ with st.expander("How can I use Talk Business?"):
         """
         You can use Talk Business in any way that fits your needs! However, we suggest the following approach:
         <ol>
-        <li> Go to the <a href='/City_explorer'>🗺 City Explorer</a> and discover patterns that matter to your business.
+        <li> Go to the <a href='/City_Explorer'>🗺 City Explorer</a> and discover patterns that matter to your business.
         <li> Use different variable combinations and create a list of potential neighborhoods.
-        <li> Go to <a href='/Neighborhood_drilldown'>🏙 Neighborhood Drill-down</a> and find detailed neighborhood information to help you guide your decision.
+        <li> Go to <a href='/Neighborhood_Drill_Down'>🏙 Neighborhood Drill Down</a> and find detailed neighborhood information to help you guide your decision.
         </ol>
     """,
     unsafe_allow_html=True

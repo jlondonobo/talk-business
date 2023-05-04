@@ -1,11 +1,11 @@
 import json
 
+import pandas as pd
 import streamlit as st
 from utils.utils import load_css
-import pandas as pd
 
 st.set_page_config(
-    page_title="🌆 Neighborhood Explorer",
+    page_title="Neighborhood Drill Down",
     layout="wide",
 )
 load_css("talk_business/assets/neighborhoods.css")
@@ -14,9 +14,9 @@ load_css("talk_business/assets/neighborhoods.css")
 from utils.flows import distributions
 from utils.names import get_county_name, get_nta_name
 from utils.plots.blocks import plot_blocks_choropleth
+from utils.plots.neighborhood import treemap
 from utils.sql import neighborhood_explorer as ne
 from utils.transformers import dissolve
-from utils.plots.neighborhood import treemap
 from utils.transformers import neighborhood as ntransform
 
 DISPLAY_COUNTIES = ["061", "081", "005", "047", "085"]
