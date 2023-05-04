@@ -63,7 +63,7 @@ with st.expander("What are the **data sources** powering Talk Business?"):
                 <div class="text">
                     <p class="h3"> US Open Census Data </p>
                     <p class="p"> SafeGraph<br>(Snowflake Marketplace)</p>
-                    <p class="dataset-description"> Latest US Census data with 7,500+ demographic attributes available at a block level. </p>
+                    <p class="dataset-description"> 2020 US Census data with 7,500+ demographic attributes available at a block level. </p>
                 </div>
             </div>
             <div class="card">
