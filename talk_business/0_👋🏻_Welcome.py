@@ -9,7 +9,7 @@ st.markdown(
     <div class=title>
         <div style=" justify-content: center;">
             <h1 style="text-align: center; padding: 5px;">Talk Business</h1>
-            <p style="text-align: center;"><i>Grow your revenue in New York City. Improve your reach through data.</i></p>
+            <p style="text-align: center;"><i>Grow your business in New York City. Connect with your audience through data.</i></p>
         </div>
     </div>
     """,
