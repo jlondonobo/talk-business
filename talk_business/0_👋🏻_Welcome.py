@@ -19,18 +19,19 @@ st.markdown(
 with st.expander("What is Talk Business?"):
     st.markdown(
         """
-        - **Talk Business** is a tool designed to help you make decisions in New York City 🗽🇺🇸
-        - Open a new store, direct your marketing efforts, and understand your current public though an easy-to-use interface
+        - **Talk Business** is a visual exploration platform designed to help you **grow your business** in New York City. 🗽🇺🇸
+        - Open a new store, focus your marketing efforts, and create campaigns that reach your target audience.
         """
     )
 
 with st.expander("How can I use Talk Business?"):
     st.markdown(
         """
-        Talk Business is designed to be used in a two-step manner:
+        You can use Talk Business in any way that fits your needs! However, we suggest the following approach:
         <ol>
-        <li> Visit the <a href='/City_explorer'>🗺 City explorer</a> and make yourself comfortable with New York. Understand population patterns, such as where the youngest population lives, and where are the most expensive houses.
-        <li> Once you find a neighborhood you are interested in, visit the <a href='/Neighborhood_drilldown'>🏙 Neighborhood drilldown</a> and get into its fine details. Choose your next location with the help of precise income distributions data, age and race patterns, rent prices and many more statistics.
+        <li> Go to the <a href='/City_explorer'>🗺 City Explorer</a> and discover patterns that matter to your business.
+        <li> Use different variable combinations and create a list of potential neighborhoods.
+        <li> Go to <a href='/Neighborhood_drilldown'>🏙 Neighborhood Drill-down</a> and find detailed neighborhood information to help you guide your decision.
         </ol>
     """,
     unsafe_allow_html=True
@@ -38,18 +39,18 @@ with st.expander("How can I use Talk Business?"):
 with st.expander("What is Talk Business' offer?"):
     st.markdown(
         """
-        **Take 5 minutes to explore the City Explorer and the Neighborhood Drilldown and you will get**:
+        Take 5 minutes to explore Talk Business and get:
 
-        ✅ Data-backed insights on where you should locate your next store in New York City
+        ✅ An initial idea of where you should open your next store, backed by data.
 
-        ✅ A personalized detailed dashboard to understand neighborhoods where you operate
+        ✅ Actionable target audience insights to power up your next marketing campaign.
 
-        ✅ Spatial insights to improve your geofenced marketing campaigns and increase your revenue $$
+        ✅ Personalized maps that fit your specific business needs.
         """
     )
 
 # Logo color: #a9a9a9
-with st.expander("What **data** powers Talk Business?"):
+with st.expander("What are the **data sources** powering Talk Business?"):
     st.markdown(
         """
         <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
@@ -62,7 +63,7 @@ with st.expander("What **data** powers Talk Business?"):
                 <div class="text">
                     <p class="h3"> US Open Census Data </p>
                     <p class="p"> SafeGraph<br>(Snowflake Marketplace)</p>
-                    <p class="dataset-description"> 2020 US Census data with 7,500+ demographic attributes available at the Census Block Group level. </p>
+                    <p class="dataset-description"> Latest US Census data with 7,500+ demographic attributes available at a block level. </p>
                 </div>
             </div>
             <div class="card">
@@ -74,7 +75,7 @@ with st.expander("What **data** powers Talk Business?"):
                 <div class="text">
                     <p class="h3"> New York City Places </p>
                     <p class="p"> Foursquare<br>(Snowflake Marketplace)</p>
-                    <p class="dataset-description"> 300,000 places in New York City with their location and categories. This data is refreshed every day. </p>
+                    <p class="dataset-description"> Details of 300,000 places in New York City. Refreshed every day. </p>
                 </div>
             </div>
             <div class="card">
@@ -86,7 +87,7 @@ with st.expander("What **data** powers Talk Business?"):
                 <div class="text">
                     <p class="h3"> NYC Subway Locations & Ridership </p>
                     <p class="p"> MTA </p>
-                    <p class="dataset-description"> NYC's 473 Subway station locations & daily ridership. </p>
+                    <p class="dataset-description"> NYC's 473 Subway station locations and daily ridership. </p>
                 </div>
             </div>
             <div class="card">
@@ -98,7 +99,7 @@ with st.expander("What **data** powers Talk Business?"):
                 <div class="text">
                     <p class="h3"> Neighborhood Tabulation Areas </p>
                     <p class="p"> NYC Department of City Planning </p>
-                    <p class="dataset-description"> Geographic boundaries for NYC neighborhoods, and mappings to tract IDs. </p>
+                    <p class="dataset-description"> Geographic boundaries for NYC neighborhoods</p>
                 </div>
             </div>
         </div>
