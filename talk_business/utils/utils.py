@@ -6,6 +6,7 @@ def app_base_config():
         page_title="Talk Business",
         initial_sidebar_state="expanded",
         layout="wide",
+        page_icon="talk_business/assets/favicon.png",
     )
 
 

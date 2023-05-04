@@ -7,6 +7,7 @@ from utils.utils import load_css
 st.set_page_config(
     page_title="Neighborhood Drill Down",
     layout="wide",
+    page_icon="talk_business/assets/favicon.png",
 )
 load_css("talk_business/assets/neighborhoods.css")
 
