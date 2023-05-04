@@ -115,7 +115,7 @@ for index, col in enumerate(columns):
     metric = col.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get, index=index, key=index)
 
     id = "CENSUS_BLOCK_GROUP"
-    if metric == "COMPANIES":
+    if metric == "PLACES":
         col1, col2 = col.columns(2)
         with col1:
             category = st.selectbox(

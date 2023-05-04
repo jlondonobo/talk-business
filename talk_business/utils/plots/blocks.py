@@ -23,8 +23,8 @@ ADD_LABELS = {
     "RACE-TWO_OR_MORE_RACES": "Two or more races Population",
     "OCCUPANCY_STATUS-OCCUPIED": "Occupied Housing Units",
     "OCCUPANCY_STATUS-VACANT": "Vacant Housing Units",
-    "COUNT": "Total Locations",
-    "PERCENTAGE": "Share of Locations",
+    "COUNT": "# of Places",
+    "PERCENTAGE": "% of All Places",
 }
 LABELS.update(ADD_LABELS)
 
