@@ -13,7 +13,7 @@ from utils.transformers.dissolve import (
 from utils.utils import load_css
 
 st.set_page_config(
-    page_title="The Big Apple",
+    page_title="City Explorer",
     layout="wide",
 )
 load_css("talk_business/assets/explorer.css")
