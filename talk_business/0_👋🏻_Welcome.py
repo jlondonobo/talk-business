@@ -16,6 +16,12 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+with st.sidebar:
+    st.markdown(
+        '<p class="attribution">A visual exploration platform by <a href="https://twitter.com/jlondonobo">Jose Londono</a></p>',
+        unsafe_allow_html=True,
+    )
+
 with st.expander("What is Talk Business?"):
     st.markdown(
         """
