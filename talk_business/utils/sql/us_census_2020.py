@@ -219,3 +219,32 @@ def get_poi_count(
         )
         .pipe(gpd.GeoDataFrame)
     )
+
+
+def get_main_stats() -> pd.DataFrame:
+    query = """
+    WITH census_stats AS (
+        SELECT 
+            COUNTY_FIPS, 
+            SUM("B01003e1") TOTAL_POPULATION,
+            SUM("B25054e1") AS TOTAL_HOUSEHOLDS,
+            SUM("B19313e1") AS TOTAL_INCOME
+        FROM OPENCENSUSDATA.PUBLIC."2020_CBG_B01"
+        LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B19" USING (CENSUS_BLOCK_GROUP)
+        LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_B25" USING (CENSUS_BLOCK_GROUP)
+        LEFT JOIN OPENCENSUSDATA.PUBLIC."2020_CBG_GEOMETRY_WKT" as c USING(CENSUS_BLOCK_GROUP)
+        WHERE STATE_FIPS = '36' AND COUNTY_FIPS IN ('061', '047', '081', '005', '085')
+        GROUP BY COUNTY_FIPS
+    ), places_stats AS (
+        SELECT 
+            COUNTY_FIPS,
+            COUNT(*) as TOTAL_PLACES
+        FROM PERSONAL.PUBLIC.POIS_WITH_BLOCKS
+        WHERE COUNTY_FIPS IN ('061', '047', '081', '005', '085')
+        GROUP BY COUNTY_FIPS
+    )
+    SELECT *
+    FROM census_stats
+    LEFT JOIN places_stats USING(COUNTY_FIPS);
+    """
+    return run_query(query).set_index("COUNTY_FIPS")

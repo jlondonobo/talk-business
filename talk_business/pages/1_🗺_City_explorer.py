@@ -10,11 +10,13 @@ from utils.transformers.dissolve import (
     dissolve_count,
     dissolve_weighted_average,
 )
+from utils.utils import load_css
 
 st.set_page_config(
     page_title="The Big Apple",
     layout="wide",
 )
+load_css("talk_business/assets/explorer.css")
 
 # Need to load this after setting page config
 # else the page will crash due to not being first function ran
@@ -23,11 +25,11 @@ from utils.names import get_county_name, get_nta_name
 from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql.us_census_2020 import (
     get_bounding_box_points,
+    get_main_stats,
     get_nta_shapes,
     get_parks,
     get_poi_count,
     get_simple_column,
-    get_statistics,
     get_subway_stations,
 )
 
@@ -62,30 +64,37 @@ with st.sidebar:
     activate_subway_stations = st.checkbox("Subway stations", value=False)
     activate_parks = st.checkbox("Parks", value=False)
 
-summary_statistics = get_statistics(counties)
+
+def get_stat(counties: str, stat) -> int:
+    main_stats = get_main_stats()   
+    return main_stats.loc[counties, stat].sum()
 
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(
         label="Total population",
-        value=f"{summary_statistics.at[0, 'TOTAL_POP']:,.0f}",
+        value=f"{get_stat(counties, 'TOTAL_POPULATION'):,.0f}",
     )
+    st.markdown("<p class='unit'>People</p>", unsafe_allow_html=True)
 with col2:
     st.metric(
-        label="Mean age",
-        value=f"{summary_statistics.at[0, 'WEIGHTED_AVG_AGE']:.0f}",
+        label="Total households",
+        value=f"{get_stat(counties, 'TOTAL_HOUSEHOLDS'):,.0f}",
     )
+    st.markdown("<p class='unit'>Households</p>", unsafe_allow_html=True)
 with col3:
     st.metric(
-        label="Percentage female population",
-        value=f"{summary_statistics.at[0, 'FEMALE_PERCENT']:.1%}",
+        label="Total yearly income",
+        value=f"${get_stat(counties, 'TOTAL_INCOME') / 1_000_000_000:,.0f} Billion",
     )
+    st.markdown("<p class='unit'>USD</p>", unsafe_allow_html=True)
 with col4:
     st.metric(
-        label="Mean per-capita income (12mo.)",
-        value=f"${summary_statistics.at[0, 'WEIGHTED_AVG_PER_CAPITA_INCOME']:,.0f}",
+        label="Total places",
+        value=f"{get_stat(counties, 'TOTAL_PLACES'):,.0f}",
     )
+    st.markdown("<p class='unit'>Places</p>", unsafe_allow_html=True)
 
 
 area, centroid = get_bounding_box_points(counties)
@@ -108,7 +117,7 @@ for index, col in enumerate(columns):
     metric = col.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get, index=index, key=index)
 
     id = "CENSUS_BLOCK_GROUP"
-    if metric == "COMPANIES":
+    if metric == "PLACES":
         col1, col2 = col.columns(2)
         with col1:
             category = st.selectbox(
@@ -223,7 +232,6 @@ for index, col in enumerate(columns):
                 id = "TRACT_CODE"
                 data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
-    tab1, tab2 = col.tabs(["Map", "Histogram"])
 
     nta_labels = load_nta_centroids(counties)
     parks = None
@@ -265,7 +273,6 @@ for index, col in enumerate(columns):
             hoverlabel=dict(bgcolor="#2D3847"),
         )
 
-
-    tab1.plotly_chart(map, use_container_width=True)
+    col.plotly_chart(map, use_container_width=True)
     histogram = plot_distribution_by_area(data, cname)
-    tab2.plotly_chart(histogram, use_container_width=True)
+    col.plotly_chart(histogram, use_container_width=True)
