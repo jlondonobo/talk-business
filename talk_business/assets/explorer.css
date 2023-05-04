@@ -36,3 +36,12 @@ div[data-testid="stMetricValue"] > div {
 .unit {
     margin-top: -10px;
 }
+
+canvas {
+    margin-top: 15px;
+    border-radius: 0.25rem;
+}
+
+.mapboxgl-map {
+    border-radius: 0.25rem;
+}

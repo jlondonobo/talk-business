@@ -232,7 +232,6 @@ for index, col in enumerate(columns):
                 id = "TRACT_CODE"
                 data = data.assign(TRACT_CODE=lambda df: df["COUNTY_FIPS"] + df[id])
 
-    tab1, tab2 = col.tabs(["Map", "Histogram"])
 
     nta_labels = load_nta_centroids(counties)
     parks = None
@@ -274,7 +273,6 @@ for index, col in enumerate(columns):
             hoverlabel=dict(bgcolor="#2D3847"),
         )
 
-
-    tab1.plotly_chart(map, use_container_width=True)
+    col.plotly_chart(map, use_container_width=True)
     histogram = plot_distribution_by_area(data, cname)
-    tab2.plotly_chart(histogram, use_container_width=True)
+    col.plotly_chart(histogram, use_container_width=True)
