@@ -23,11 +23,11 @@ from utils.names import get_county_name, get_nta_name
 from utils.plots.blocks import plot_blocks_choropleth
 from utils.sql.us_census_2020 import (
     get_bounding_box_points,
+    get_main_stats,
     get_nta_shapes,
     get_parks,
     get_poi_count,
     get_simple_column,
-    get_statistics,
     get_subway_stations,
 )
 
@@ -62,29 +62,36 @@ with st.sidebar:
     activate_subway_stations = st.checkbox("Subway stations", value=False)
     activate_parks = st.checkbox("Parks", value=False)
 
-summary_statistics = get_statistics(counties)
+
+def get_stat(counties: str, stat) -> int:
+    main_stats = get_main_stats()   
+    return main_stats.loc[counties, stat].sum()
 
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(
         label="Total population",
-        value=f"{summary_statistics.at[0, 'TOTAL_POP']:,.0f}",
+        value=f"{get_stat(counties, 'TOTAL_POPULATION'):,.0f}",
+        help="Number of people in the selected counties.",
     )
 with col2:
     st.metric(
-        label="Mean age",
-        value=f"{summary_statistics.at[0, 'WEIGHTED_AVG_AGE']:.0f}",
+        label="Total households",
+        value=f"{get_stat(counties, 'TOTAL_HOUSEHOLDS'):,.0f}",
+        help="Number of households in the selected counties.",
     )
 with col3:
     st.metric(
-        label="Percentage female population",
-        value=f"{summary_statistics.at[0, 'FEMALE_PERCENT']:.1%}",
+        label="Total income",
+        value=f"${get_stat(counties, 'TOTAL_INCOME') / 1_000_000_000:,.0f} Billion",
+        help="Yearly income of all people in the selected counties."
     )
 with col4:
     st.metric(
-        label="Mean per-capita income (12mo.)",
-        value=f"${summary_statistics.at[0, 'WEIGHTED_AVG_PER_CAPITA_INCOME']:,.0f}",
+        label="Total places",
+        value=f"{get_stat(counties, 'TOTAL_PLACES'):,.0f}",
+        help="Number of collected places in the selected counties."
     )
 
 
