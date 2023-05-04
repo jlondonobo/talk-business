@@ -15,6 +15,7 @@ from utils.utils import load_css
 st.set_page_config(
     page_title="City Explorer",
     layout="wide",
+    page_icon="talk_business/assets/favicon.png"
 )
 load_css("talk_business/assets/explorer.css")
 
