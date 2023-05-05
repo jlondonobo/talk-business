@@ -44,10 +44,10 @@ st.markdown(
 DISPLAY_COUNTIES = ["061", "081", "005", "047", "085"]
 with st.sidebar:
     counties = st.multiselect(
-        "Choose the **counties** you want to explore", DISPLAY_COUNTIES, DISPLAY_COUNTIES[0], format_func=get_county_name
+        "Choose the **boroughs** you want to explore", DISPLAY_COUNTIES, DISPLAY_COUNTIES[0], format_func=get_county_name
     )
     if not counties:
-        st.warning("Please select at least one county.")
+        st.warning("Please select at least one borough.")
         st.stop()
 
     level = st.radio(
