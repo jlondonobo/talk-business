@@ -59,14 +59,14 @@ content = f"""
 
 clicked = click_detector(content)
 
-st.info("Click the name of a borough to learn more about it", icon="💡")
+st.info("Click the name of a **borough** to learn more about it", icon="💡")
 
 EXTERNAL = {
-    "061": {"population": 1, "density": 3, "per_capita_income": 2},
-    "047": {"population": 1, "density": 3, "per_capita_income": 2},
-    "081": {"population": 1, "density": 3, "per_capita_income": 2},
-    "005": {"population": 1, "density": 3, "per_capita_income": 2},
-    "085": {"population": 1, "density": 3, "per_capita_income": 2},
+    "061": {"population": 1_629_153, "density": 74_781, "per_capita_income": 128_000_000_000 / 1_629_153}, # manhattan
+    "047": {"population": 2_576_771, "density": 39_438, "per_capita_income": 94_000_000_000 / 2_576_771}, # Brooklyn
+    "081": {"population": 2_270_976, "density": 22_125, "per_capita_income": 76_000_000_000 / 2_270_976}, # Queens
+    "005": {"population": 1_427_056, "density": 34_920, "per_capita_income": 32_000_000_000 / 1_427_056}, # Bronx
+    "085": {"population": 475_596, "density": 8_618, "per_capita_income": 18_000_000_000 / 475_596}, # Staten Island
 }
 EXTERNAL = pd.DataFrame.from_dict(EXTERNAL, orient="index")
 
@@ -75,10 +75,32 @@ EXTERNAL = pd.DataFrame.from_dict(EXTERNAL, orient="index")
 def get_geometries_with_data():
     data = gpd.read_file("talk_business/local_data/counties")
     data = data.merge(EXTERNAL, left_on="COUNTYFP", right_index=True)
+    data = data.assign(name=data["COUNTYFP"].map(get_county_name))
     return data
 
 
 geoms = get_geometries_with_data()
+
+
+def weighted_average(data, weights):
+    return (data * weights).sum() / weights.sum()
+
+TOTAL_POPULATION = geoms["population"].sum()
+TOTAL_DENSITY = 29_095
+PER_CAPITA_INCOME = weighted_average(geoms["per_capita_income"], geoms["population"])
+
+geoms_stats = geoms[["population", "density", "per_capita_income", "COUNTYFP"]].set_index("COUNTYFP")
+st.markdown(
+    f"""
+    <h4 style="padding-bottom: 0px;">{get_county_name(clicked) if clicked else "New York City"}</h4>
+    <ul>
+    <li><i>Total population: <b>{geoms_stats.at[clicked, "population"] if clicked else TOTAL_POPULATION:,}</b></i>
+    <li><i>Density: <b>{geoms_stats.at[clicked, "density"] if clicked else TOTAL_DENSITY:,}</b> pop./mi<sup>2</sup></i>
+    <li><i>Per capita income: <b>${geoms_stats.at[clicked, "per_capita_income"] if clicked else PER_CAPITA_INCOME:,.0f} USD</b></i>
+    </ul>
+    """,
+    unsafe_allow_html=True,
+)
 
 plot = plot_highlighted_choropleth(
     geoms,
@@ -86,6 +108,6 @@ plot = plot_highlighted_choropleth(
     "COUNTYFP",
     center={"lat": 40.73, "lon": -73.93},
     selected_color="#7c9dc0",
-    # hover_data={"name": True, "population_2023": True, "density": True, "time_to_center": True, "MPIO_CDPMP": False, "is_selected": False},
+    hover_data={"name": True, "density": True, "is_selected": False, "COUNTYFP": False},
 )
 st.plotly_chart(plot, use_container_width=True)
