@@ -1,7 +1,13 @@
+import geopandas as gpd
+import pandas as pd
 import streamlit as st
+from dotenv import load_dotenv
 from st_click_detector import click_detector
 from utils.names import get_county_name
+from utils.plots.about import plot_highlighted_choropleth
 from utils.utils import load_css
+
+load_dotenv()
 
 st.set_page_config(
     page_title="About New York City",
@@ -53,4 +59,33 @@ content = f"""
 
 clicked = click_detector(content)
 
+st.info("Click the name of a borough to learn more about it", icon="💡")
 
+EXTERNAL = {
+    "061": {"population": 1, "density": 3, "per_capita_income": 2},
+    "047": {"population": 1, "density": 3, "per_capita_income": 2},
+    "081": {"population": 1, "density": 3, "per_capita_income": 2},
+    "005": {"population": 1, "density": 3, "per_capita_income": 2},
+    "085": {"population": 1, "density": 3, "per_capita_income": 2},
+}
+EXTERNAL = pd.DataFrame.from_dict(EXTERNAL, orient="index")
+
+
+@st.cache_data
+def get_geometries_with_data():
+    data = gpd.read_file("talk_business/local_data/counties")
+    data = data.merge(EXTERNAL, left_on="COUNTYFP", right_index=True)
+    return data
+
+
+geoms = get_geometries_with_data()
+
+plot = plot_highlighted_choropleth(
+    geoms,
+    clicked,    
+    "COUNTYFP",
+    center={"lat": 40.73, "lon": -73.93},
+    selected_color="#7c9dc0",
+    # hover_data={"name": True, "population_2023": True, "density": True, "time_to_center": True, "MPIO_CDPMP": False, "is_selected": False},
+)
+st.plotly_chart(plot, use_container_width=True)
