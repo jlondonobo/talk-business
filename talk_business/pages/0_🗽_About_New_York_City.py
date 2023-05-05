@@ -1,10 +1,19 @@
 import streamlit as st
+from st_click_detector import click_detector
+from utils.names import get_county_name
+from utils.utils import load_css
 
 st.set_page_config(
     page_title="About New York City",
     layout="wide",
     page_icon="talk_business/assets/favicon.png",
 )
+load_css("talk_business/assets/about.css")
+
+
+def clickable_borough(county: str):
+    return f'<a style="color: #7c9dc0;" href="" id="{county}">{get_county_name(county)}</a>'
+
 
 st.markdown("# About New York City")
 
@@ -31,8 +40,17 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown(
-    """
-    New York City is divided into 5 boroughs: Manhattan, Brooklyn, Queens, the Bronx, and Staten Island. Each has a unique character and history.
-    """
-)
+
+content = f"""
+    <p>New York City is divided into 5 boroughs:
+    {clickable_borough("061")},
+    {clickable_borough("047")},
+    {clickable_borough("081")},
+    {clickable_borough("005")} and
+    {clickable_borough("085")}.
+    Each has a unique character and history.</p>
+"""
+
+clicked = click_detector(content)
+
+
