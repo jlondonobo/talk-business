@@ -25,7 +25,7 @@ DISPLAY_COUNTIES = ["061", "081", "005", "047", "085"]
 # Sidebar
 with st.sidebar:
     county_select = st.radio(
-        "County", DISPLAY_COUNTIES, 0, format_func=get_county_name, horizontal=True
+        "Borough", DISPLAY_COUNTIES, 0, format_func=get_county_name, horizontal=True
     )
 
     nta_options = ne.get_available_nta_list(county_select)["NTA_CODE"].to_list()
@@ -36,13 +36,13 @@ with st.sidebar:
         st.radio("Distribution display", ["Percentage", "Total"], horizontal=True)
         == "Percentage"
     )
-    compare_county = st.checkbox("Compare with county", value=False)
+    compare_county = st.checkbox("Compare with borough", value=False)
 
 
 st.markdown(
     f"""
     <h1> Neighborhood Drilldown </h1>
-    <div class='subtitle'><h2>📍 {get_nta_name(nta_select)} 📍</h2><h3>{get_county_name(county_select)} County</h5></div>
+    <div class='subtitle'><h2>📍 {get_nta_name(nta_select)} 📍</h2><h3>{get_county_name(county_select)}</h5></div>
     """,
     unsafe_allow_html=True,
 )

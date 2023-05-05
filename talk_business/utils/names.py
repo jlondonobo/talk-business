@@ -265,11 +265,11 @@ NTAS = {
 
 
 COUNTIES = {
-    "005": "Bronx",
-    "047": "Kings",
-    "061": "New York",
+    "005": "The Bronx",
+    "047": "Brooklyn",
+    "061": "Manhattan",
     "081": "Queens",
-    "085": "Richmond",
+    "085": "Staten Island",
 }
 
 
