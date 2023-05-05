@@ -42,7 +42,7 @@ with st.sidebar:
 st.markdown(
     f"""
     <h1> Neighborhood Drilldown </h1>
-    <div class='subtitle'><h2>📍 {get_nta_name(nta_select)} 📍</h2><h3>{get_county_name(county_select)} County</h5></div>
+    <div class='subtitle'><h2>📍 {get_nta_name(nta_select)} 📍</h2><h3>{get_county_name(county_select)}</h5></div>
     """,
     unsafe_allow_html=True,
 )

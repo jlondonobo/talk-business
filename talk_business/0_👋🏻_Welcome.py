@@ -21,6 +21,10 @@ with st.sidebar:
         '<p class="attribution">A visual exploration platform by <a href="https://twitter.com/jlondonobo">Jose Londono</a></p>',
         unsafe_allow_html=True,
     )
+    # st.markdown(
+    #     '<p class="icon-attribution">Statue of Liberty icon created by <a href="https://www.flaticon.com/free-icons/statue-of-liberty" title="statue of liberty icons">Freepik - Flaticon</a></footer>',
+    #     unsafe_allow_html=True,
+    # )
 
 with st.expander("What is Talk Business?"):
     st.markdown(
@@ -112,4 +116,3 @@ with st.expander("What are the **data sources** powering Talk Business?"):
         """,
         unsafe_allow_html=True,
     )
-
