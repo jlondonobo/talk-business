@@ -4,6 +4,7 @@
     outline: 1px solid white;
     padding: 20px 50px;
     margin-top: 20px;
+    margin-bottom: 10px;
     border-radius: 0.25rem;
     text-align: center;
 }
@@ -13,6 +14,7 @@
     outline: None;
     padding: 0px;
     margin-top: 20px;
+    margin-bottom: 10px;
     border-radius: None;
     text-align: left;
 }
