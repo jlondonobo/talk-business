@@ -21,6 +21,12 @@ with st.sidebar:
         '<p class="attribution">A visual exploration platform by <a href="https://twitter.com/jlondonobo">Jose Londono</a></p>',
         unsafe_allow_html=True,
     )
+    
+    st.markdown(
+        '<p class="attribution">Learn how to use it with the <a href="https://youtu.be/4tWG5e6-olU">walkthrough</a></p>',
+        unsafe_allow_html=True,
+    )
+    
     # st.markdown(
     #     '<p class="icon-attribution">Statue of Liberty icon created by <a href="https://www.flaticon.com/free-icons/statue-of-liberty" title="statue of liberty icons">Freepik - Flaticon</a></footer>',
     #     unsafe_allow_html=True,
