@@ -20,7 +20,7 @@ from utils.sql import neighborhood_explorer as ne
 from utils.transformers import dissolve
 from utils.transformers import neighborhood as ntransform
 
-DISPLAY_COUNTIES = ["061", "081", "005", "047", "085"]
+DISPLAY_COUNTIES = ["061", "047", "081", "005",  "085"]
 
 # Sidebar
 with st.sidebar:
