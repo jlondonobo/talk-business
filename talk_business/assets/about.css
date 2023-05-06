@@ -1,0 +1,12 @@
+canvas {
+    margin-top: 15px;
+    border-radius: 0.25rem;
+}
+
+.mapboxgl-map {
+    border-radius: 0.25rem;
+}
+
+.stAlert {
+    margin-top: -30px;
+}
