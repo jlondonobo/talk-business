@@ -35,7 +35,7 @@ st.markdown(
     New york has an advantageous coastal location, exceptional infrastructure, and good quality of life. 
     Business is made simple thanks to a highly educated workforce, and ease of access to capital. 
     
-    As of 2022 the city had 2.3 million registered small businesses 👩‍💼 with 13% founded by hispanic entrepreneurs. Now it's your time to join.
+    As of 2022, the city had 2.3 million registered small businesses 👩‍💼 with 13% founded by Hispanic entrepreneurs. Now it's your time to join.
     """
 )
 
@@ -90,9 +90,21 @@ TOTAL_DENSITY = 29_095
 PER_CAPITA_INCOME = weighted_average(geoms["per_capita_income"], geoms["population"])
 
 geoms_stats = geoms[["population", "density", "per_capita_income", "COUNTYFP"]].set_index("COUNTYFP")
+
+TEXTS = {
+    "061": "Manhattan is the business and financial hub of the city, with many of the world's largest corporations and financial institutions located in it. The borough has a vibrant nightlife, with many bars and restaurants that cater to the after-work crowd. It also has many high-end shopping districts, such as Fifth Avenue and Madison Avenue.",
+    "047": "Brooklyn is the most populous borough and is known for its hipster culture, street art, and trendy restaurants. It is home to popular neighborhoods such as Williamsburg, Park Slope, and Brooklyn Heights. Brooklyn also has many parks and beaches, including Prospect Park and Coney Island. Brooklyn has a thriving startup and creative community, with many tech startups, advertising agencies, and media companies based in the borough. ",
+    "081": "Queens is the largest borough in terms of area and is one of the most diverse counties in the United States. It is home to many ethnic enclaves, including Chinatown, Little India, and Astoria (known for its Greek community). Queens is also home to JFK International Airport and LaGuardia Airport, and many tech companies, such as Uber and JetBlue, and offers affordable office space compared to Manhattan and Brooklyn.",
+    "005": "The Bronx is located north of Manhattan and is known for its cultural landmarks such as the Bronx Zoo, the New York Botanical Garden, and Yankee Stadium. It is also known for its hip-hop culture and its contribution to the birth of the genre. The Bronx is also home to several industrial zones, such as the Hunts Point Food Distribution Center, which is one of the largest food distribution centers in the world.",
+    "085": "Staten Island is the least populated borough and is located south of Manhattan. It is known for its suburban feel and is often referred to as the 'forgotten borough'.",
+}
+st.markdown(f"""<h4 style="padding-bottom: 0px;">{get_county_name(clicked) if clicked else "New York City"}</h4>""", unsafe_allow_html=True)
+
+if clicked:
+    st.markdown(TEXTS[clicked])
+
 st.markdown(
     f"""
-    <h4 style="padding-bottom: 0px;">{get_county_name(clicked) if clicked else "New York City"}</h4>
     <ul>
     <li><i>Total population: <b>{geoms_stats.at[clicked, "population"] if clicked else TOTAL_POPULATION:,}</b></i>
     <li><i>Density: <b>{geoms_stats.at[clicked, "density"] if clicked else TOTAL_DENSITY:,}</b> pop./mi<sup>2</sup></i>
