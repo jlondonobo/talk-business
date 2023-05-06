@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Union
+from typing import List, Union
 
 import geopandas as gpd
 import pandas as pd
@@ -17,6 +17,7 @@ def plot_highlighted_choropleth(
     geodata: gpd.GeoDataFrame,
     selection: str,
     id_col: str,
+    customdata: List[str], 
     geometry_col: str = "geometry",
     selected_color: str = "#EAB9A5",
     default_color: str = "#F4F4F4",
@@ -39,8 +40,8 @@ def plot_highlighted_choropleth(
         mapbox_style=None,
         zoom=zoom,
         center=center,
-        hover_data=hover_data,
         opacity=0.7,
+        custom_data=customdata
     )
 
     fig.update_layout(
@@ -49,5 +50,16 @@ def plot_highlighted_choropleth(
         margin=dict(l=0, r=0, t=0, b=0),
         uirevision="Don't change",
         showlegend=False,
+    )
+    fig.update_traces(
+        hovertemplate=(
+            "<b>%{customdata[0]}</b><br>"
+            "<br>"
+            "Population: %{customdata[1]:,.0f}<br>"
+            "Density: %{customdata[2]:,.0f} pop./mi2<br>"
+            "Per-capita income: $%{customdata[3]:,.0f} USD<br>"
+            "<extra></extra>"
+        ),
+        hoverlabel=dict(bgcolor="#2D3847"),
     )
     return fig

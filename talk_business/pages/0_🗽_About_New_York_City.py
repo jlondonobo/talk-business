@@ -108,6 +108,6 @@ plot = plot_highlighted_choropleth(
     "COUNTYFP",
     center={"lat": 40.73, "lon": -73.93},
     selected_color="#7c9dc0",
-    hover_data={"name": True, "density": True, "is_selected": False, "COUNTYFP": False},
+    customdata=["name", "population", "density", "per_capita_income"],
 )
 st.plotly_chart(plot, use_container_width=True)
