@@ -3,7 +3,7 @@ import streamlit as st
 
 def app_base_config():
     st.set_page_config(
-        page_title="Talk Business",
+        page_title="SiteWise",
         initial_sidebar_state="expanded",
         layout="wide",
         page_icon="talk_business/assets/favicon.png",

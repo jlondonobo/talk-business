@@ -8,8 +8,8 @@ st.markdown(
     """
     <div class=title>
         <div style=" justify-content: center;">
-            <h1 style="text-align: center; padding: 5px;">Talk Business</h1>
-            <p style="text-align: center;"><i>Grow your business in New York City. Connect with your audience through data.</i></p>
+            <h1 style="text-align: center; padding: 5px;">SiteWise🗽</h1>
+            <p style="text-align: center;">Find the perfect site for your store in New York City. Make an impact.</p>
         </div>
     </div>
     """,
@@ -32,18 +32,18 @@ with st.sidebar:
     #     unsafe_allow_html=True,
     # )
 
-with st.expander("What is Talk Business?"):
+with st.expander("What is SiteWise?"):
     st.markdown(
         """
-        - **Talk Business** is a visual exploration platform designed to help you **grow your business** in New York City. 🗽🇺🇸
+        - **SiteWise**🗽 is a visual exploration platform designed to help you **grow your business** in New York City.
         - Open a new store, focus your marketing efforts, and create campaigns that reach your target audience.
         """
     )
 
-with st.expander("How can I use Talk Business?"):
+with st.expander("How can I use SiteWise?"):
     st.markdown(
         """
-        You can use Talk Business in any way that fits your needs! However, we suggest the following approach:
+        If this is your fist time using SiteWise, I suggest you take the following steps:
         <ol>
         <li> Go to the <a href='/City_Explorer'>🗺 City Explorer</a> and discover patterns that matter to your business.
         <li> Use different variable combinations and create a list of potential neighborhoods.
@@ -52,10 +52,10 @@ with st.expander("How can I use Talk Business?"):
     """,
     unsafe_allow_html=True
     )
-with st.expander("What is Talk Business' offer?"):
+with st.expander("What is SiteWise' offer?"):
     st.markdown(
         """
-        Take 5 minutes to explore Talk Business and get:
+        Take 5 minutes to explore SiteWise and get:
 
         ✅ An initial idea of where you should open your next store, backed by data.
 
@@ -66,7 +66,7 @@ with st.expander("What is Talk Business' offer?"):
     )
 
 # Logo color: #a9a9a9
-with st.expander("What are the **data sources** powering Talk Business?"):
+with st.expander("What are the **data sources** powering SiteWise?"):
     st.markdown(
         """
         <div style="display: flex; align-items: center; justify-content: center; width: 100%;">

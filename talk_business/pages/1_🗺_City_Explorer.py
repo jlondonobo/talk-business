@@ -74,25 +74,25 @@ def get_stat(counties: str, stat) -> int:
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(
-        label="Total population",
+        label="Population",
         value=f"{get_stat(counties, 'TOTAL_POPULATION'):,.0f}",
     )
     st.markdown("<p class='unit'>People</p>", unsafe_allow_html=True)
 with col2:
     st.metric(
-        label="Total households",
+        label="Households",
         value=f"{get_stat(counties, 'TOTAL_HOUSEHOLDS'):,.0f}",
     )
     st.markdown("<p class='unit'>Households</p>", unsafe_allow_html=True)
 with col3:
     st.metric(
-        label="Total yearly income",
+        label="Potential spending",
         value=f"${get_stat(counties, 'TOTAL_INCOME') / 1_000_000_000:,.0f} Billion",
     )
     st.markdown("<p class='unit'>USD</p>", unsafe_allow_html=True)
 with col4:
     st.metric(
-        label="Total places",
+        label="Points of interest",
         value=f"{get_stat(counties, 'TOTAL_PLACES'):,.0f}",
     )
     st.markdown("<p class='unit'>Places</p>", unsafe_allow_html=True)
@@ -115,7 +115,7 @@ if area > 1_000_000_000:
 
 columns = st.columns(maps)
 for index, col in enumerate(columns):
-    metric = col.selectbox("Select a metric", list(METRICS.keys()), format_func=METRICS.get, index=index, key=index)
+    metric = col.selectbox("Select a variable", list(METRICS.keys()), format_func=METRICS.get, index=index, key=index)
 
     id = "CENSUS_BLOCK_GROUP"
     if metric == "PLACES":
